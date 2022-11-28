@@ -21,7 +21,6 @@ class AlarmsListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentAlarmsListBinding.inflate(inflater, container, false)
         return binding.root
 

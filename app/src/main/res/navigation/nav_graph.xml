@@ -3,26 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/alarmsListFragment">
 
     <fragment
-        android:id="@+id/FirstFragment"
+        android:id="@+id/alarmsListFragment"
         android:name="com.android.myalarm.AlarmsListFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_alarms_list">
-
+        android:label="fragment_alarms_list"
+        tools:layout="@layout/fragment_alarms_list" >
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/return_to_main"
+            app:destination="@id/alarmFragment" />
     </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
+        android:id="@+id/alarmFragment"
         android:name="com.android.myalarm.AlarmFragment"
-        android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_alarm">
-
+        android:label="fragment_alarm"
+        tools:layout="@layout/fragment_alarm" >
         <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            android:id="@+id/to_alarm_fragment"
+            app:destination="@id/alarmsListFragment" />
     </fragment>
 </navigation>
