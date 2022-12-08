@@ -36,11 +36,7 @@ class AlarmsListFragment : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.navigationAddTaskButton.setOnClickListener{
-            lifecycleScope.launch {
-                findNavController().navigate(AlarmsListFragmentDirections.createAlarm())
-            }
-        }
+
     }
 
     /**
@@ -50,4 +46,5 @@ class AlarmsListFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
 }

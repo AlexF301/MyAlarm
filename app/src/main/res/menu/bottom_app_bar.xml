@@ -1,4 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
+    <item
+        android:id="@+id/alarms_list_fragment_tab"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_alarm_24"
+        android:title="@string/alarms"/>
+    <item
+        android:id="@+id/timer_fragment_tab"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_timelapse_24"
+        android:title="@string/timer"/>
+    <item
+        android:id="@+id/stopwatch_fragment_tab"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_timer_24"
+        android:title="@string/stopwatch"/>
 </menu>

@@ -3,21 +3,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/alarmsListFragment">
+    app:startDestination="@id/nav_alarmsListFragment">
 
     <fragment
-        android:id="@+id/alarmsListFragment"
+        android:id="@+id/nav_alarmsListFragment"
         android:name="com.android.myalarm.AlarmsListFragment"
         android:label="fragment_alarms_list"
         tools:layout="@layout/fragment_alarms_list" >
         <action
             android:id="@+id/create_alarm"
-            app:destination="@id/alarmFragment" />
+            app:destination="@id/nav_alarmFragment" />
     </fragment>
     <fragment
-        android:id="@+id/alarmFragment"
+        android:id="@+id/nav_alarmFragment"
         android:name="com.android.myalarm.AlarmFragment"
         android:label="fragment_alarm"
         tools:layout="@layout/fragment_alarm" >
     </fragment>
+    <fragment
+        android:id="@+id/nav_stopWatchFragment"
+        android:name="com.android.myalarm.StopWatchFragment"
+        android:label="fragment_stop_watch"
+        tools:layout="@layout/fragment_stop_watch" />
+    <fragment
+        android:id="@+id/nav_timerFragment"
+        android:name="com.android.myalarm.TimerFragment"
+        android:label="fragment_timer"
+        tools:layout="@layout/fragment_timer" />
 </navigation>
