@@ -11,7 +11,7 @@
         android:label="fragment_alarms_list"
         tools:layout="@layout/fragment_alarms_list" >
         <action
-            android:id="@+id/return_to_main"
+            android:id="@+id/create_alarm"
             app:destination="@id/alarmFragment" />
     </fragment>
     <fragment
@@ -19,8 +19,5 @@
         android:name="com.android.myalarm.AlarmFragment"
         android:label="fragment_alarm"
         tools:layout="@layout/fragment_alarm" >
-        <action
-            android:id="@+id/to_alarm_fragment"
-            app:destination="@id/alarmsListFragment" />
     </fragment>
 </navigation>

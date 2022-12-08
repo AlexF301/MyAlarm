@@ -2,8 +2,10 @@ package com.android.myalarm
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
 import androidx.viewpager2.widget.ViewPager2
 import com.android.myalarm.databinding.ActivityMainBinding
+import com.google.android.material.tabs.TabLayoutMediator
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,9 +18,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //TODO: alarm, timer, and stopwatch as a viewpager2?
         viewpager = binding.viewPager2
         setUpViewPager()
+
+        TabLayoutMediator(binding.tabLayout, viewpager) { tab, position ->
+            tab.text = "OBJECT ${(position + 1)}"
+        }.attach()
     }
 
     private fun setUpViewPager() {
