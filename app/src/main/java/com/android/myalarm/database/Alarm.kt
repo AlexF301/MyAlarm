@@ -19,7 +19,7 @@ data class Alarm(
     var type : AlarmType
 ) {
     @ColumnInfo(name = "alarm_id")
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     var id: UUID = UUID.randomUUID()
 }
 

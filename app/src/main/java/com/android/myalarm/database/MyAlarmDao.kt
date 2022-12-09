@@ -2,6 +2,7 @@ package com.android.myalarm.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
 /**
@@ -15,7 +16,7 @@ interface MyAlarmDao {
      * Add an alarm to the database
      */
     @Insert
-    suspend fun insert(alarm: Alarm): UUID
+    suspend fun insert(alarm: Alarm)
 
     /**
      * update the alarm
@@ -38,12 +39,12 @@ interface MyAlarmDao {
     /**
      * get all the alarms from the database
      */
-    @Query("Select * from alarms")
-    fun getAllAlarms(): LiveData<MutableList<Alarm>>
+    @Query("SELECT * FROM alarms")
+    fun getAllAlarms(): Flow<List<Alarm>>
 
-    /**
-
-     */
-    @Query("SELECT alarm_id FROM alarms where hour = :hour AND minute = :minute AND days_selected = :days")
-    fun getAlarm(hour: Int, minute: Int, days: List<String>): LiveData<Long>
+//    /**
+//
+//     */
+//    @Query("SELECT alarm_id FROM alarms where hour = :hour AND minute = :minute AND days_selected = :days")
+//    fun getAlarm(hour: Int, minute: Int, days: List<String>): Flow<Alarm>
 }
