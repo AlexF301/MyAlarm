@@ -1,6 +1,7 @@
 package com.android.myalarm
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -21,16 +22,24 @@ class MainActivity : AppCompatActivity() {
         navigationBarSetup()
     }
 
+    /**
+     * Responds to item navigation bar item clicks by navigating to the fragment that corresponds
+     * with each item.
+     */
     private fun navigationBarSetup() {
-        NavigationBarView.OnItemSelectedListener { item ->
+        binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.alarms_list_fragment_tab -> {
                     binding.navHostFragment.findNavController().navigate(R.id.nav_alarmsListFragment)
                     true
                 }
                 R.id.timer_fragment_tab -> {
-                    findNavController(binding.navHostFragment.id).navigateUp()
-                    findNavController(binding.navHostFragment.id).navigate(R.id.nav_timerFragment)
+                    //findNavController(binding.navHostFragment.id).navigateUp()
+                    binding.navHostFragment.findNavController().navigate(R.id.nav_timerFragment)
+                    true
+                }
+                R.id.stopwatch_fragment_tab -> {
+                    binding.navHostFragment.findNavController().navigate(R.id.nav_stopWatchFragment)
                     true
                 }
                 else -> false
