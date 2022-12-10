@@ -20,4 +20,6 @@
     <string name="timer">Timer</string>
     <string name="stopwatch">Stopwatch</string>
     <string name="fab_content_desc">Add Alarm</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
 </resources>
