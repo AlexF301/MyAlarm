@@ -33,13 +33,32 @@ class AlarmViewModel : ViewModel() {
     // Variables Saved with alarm creation
     var days: List<String> = Collections.emptyList()
     var type: AlarmType = AlarmType.Generic
-    var insertedId: Long = 0L
+    //var insertedId: Long = 0L
     var volumeLevel: Int = 0
     var vibrate: Boolean = true
     var title: String = "Wake Up"
     var ringtoneUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
     var ringtoneName: String = ""
 
+    /**
+     * add an alarm
+     */
+    suspend fun addAlarm(alarm : Alarm) = repo.addAlarm(alarm)
+
+    /**
+     * update an alarm
+     */
+    suspend fun updateAlarm(alarm: Alarm) = repo.updateAlarm(alarm)
+
+    /**
+     * delete an alarm
+     */
+    suspend fun deleteAlarm(alarm : Alarm) = repo.deleteAlarm(alarm)
+
+    /**
+     * get all alarms
+     */
+    fun getAllAlarms() = repo.getAllAlarms()
 
 //    private fun updateAlarmManager(isOn: Boolean, alarm: Alarm, id: Long) {
 //        val alarmIntent = Intent(getApplication(), AlarmReceiver::class.java)

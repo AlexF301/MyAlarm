@@ -1,44 +1,33 @@
 package com.android.myalarm.database
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
-import java.util.UUID
 
 /**
  * The data access object for performing queries involving events.
- * TODO: change livedata
- * TODO: Update some of these methods - some are uselesss i think
  */
 @Dao
 interface MyAlarmDao {
-    /**
-     * Add an alarm to the database
-     */
+
+    /** Add an alarm to the database */
     @Insert
-    suspend fun insert(alarm: Alarm)
+    suspend fun addAlarm(alarm: Alarm)
 
-    /**
-     * update the alarm
-     */
+    /** update the alarm */
     @Update
-    fun update(alarm: Alarm)
+    suspend fun updateAlarm(alarm: Alarm)
 
-    /**
-     *
-     */
-    @Query("UPDATE alarms SET alarm_state=:alarmIsOn WHERE alarm_id=:id ")
-    fun updateIsOn(alarmIsOn: Boolean, id: Long?)
-
-    /**
-     * delete the alarm from the database
-     */
+    /** delete the alarm from the database */
     @Delete
-    fun delete(alarm: Alarm)
+    suspend fun deleteAlarm(alarm: Alarm)
 
-    /**
-     * get all the alarms from the database
+    /** update the status of the alarm (enabled or disable
+     * TODO: does this even have to be used since theres already an update method
      */
+    @Query("UPDATE alarms SET alarm_state=:enable WHERE alarm_id=:id ")
+    fun updateIsOn(enable: Boolean, id: Long?)
+
+    /** get all the alarms from the database */
     @Query("SELECT * FROM alarms")
     fun getAllAlarms(): Flow<List<Alarm>>
 

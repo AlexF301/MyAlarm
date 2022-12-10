@@ -7,8 +7,11 @@ import java.util.UUID
 
 @Entity(tableName = "alarms")
 data class Alarm(
+    @ColumnInfo(name = "alarm_id")
+    @PrimaryKey
+    var id: UUID = UUID.randomUUID(),
     @ColumnInfo(name = "hour")
-    var Hour: Int,
+    var hour: Int,
     @ColumnInfo(name = "minute")
     var minute: Int,
     @ColumnInfo(name = "days_selected")
@@ -17,12 +20,7 @@ data class Alarm(
     var isOn: Boolean,
     @ColumnInfo(name = "type")
     var type : AlarmType
-) {
-    @ColumnInfo(name = "alarm_id")
-    @PrimaryKey
-    var id: UUID = UUID.randomUUID()
-}
-
+)
 
 enum class AlarmType(name : String) {
     Generic("Normal"),
