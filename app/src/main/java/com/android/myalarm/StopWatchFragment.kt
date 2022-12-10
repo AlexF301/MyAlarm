@@ -87,26 +87,7 @@ class StopWatchFragment : Fragment() {
 //        }
 
 
-//        startCountdown()
 //        stopWatch()
-    }
-
-    /**
-     * Starts a countdown (timer) based on the parameters given. Uses 30,000 milliseconds
-     * (30 seconds) as a default value for now.
-     */
-    private fun startCountdown() {
-        object : CountDownTimer(30000, 1000) {
-
-            @SuppressLint("SetTextI18n")
-            override fun onTick(millisUntilFinished: Long) {
-                binding.stopWatchView.text = "seconds remaining: " + millisUntilFinished / 1000
-            }
-
-            override fun onFinish() {
-                Toast.makeText(activity, "Time is up", Toast.LENGTH_SHORT).show();
-            }
-        }.start()
     }
 
 

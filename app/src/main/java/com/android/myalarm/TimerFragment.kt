@@ -46,21 +46,50 @@ class TimerFragment : Fragment() {
 
     // I THINK "millisUntilFinished" in onTick can be used to get the remaining time.
 
+    private var paused = false
+    private var started = false
+
+
+
+
+    // NEED CODE TO CHANGE THE PAUSE/RESUME BUTTON BACK TO "START" IF "CANCEL" HAS BEEN CLICKED
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.startCountdown.setOnClickListener { v ->
-            startCountdown()
+            // timer is now running, so should go into if statement.
+            if (!paused) {
+                if (!started) {
+//                    startCountdown()
+                    timer.start()
+                    started = true
+                }
+                paused = true // set paused to true because we should now be able to click pause.
+                binding.startCountdown.text = getString(R.string.pause)
+            } else { // will prob need alot more code to actually pause
+                // code
+                binding.startCountdown.text = getString(R.string.resume)
+                paused = false
+            }
         }
+
+
+        // need to manipulate the "paused" flag still
+        binding.stopCountdown.setOnClickListener { v ->
+            timer.cancel()
+            started = false
+            binding.startCountdown.text = getString(R.string.start)
+        }
+
+
     }
 
     /**
      * Starts a countdown (timer) based on the parameters given. Uses 30,000 milliseconds
      * (30 seconds) as a default value for now.
      */
-    private fun startCountdown() {
-        object : CountDownTimer(30000, 1000) {
+        val timer = object : CountDownTimer(30000, 1000) {
 
             @SuppressLint("SetTextI18n")
             override fun onTick(millisUntilFinished: Long) {
@@ -70,8 +99,7 @@ class TimerFragment : Fragment() {
             override fun onFinish() {
                 Toast.makeText(activity, "Time is up", Toast.LENGTH_SHORT).show();
             }
-        }.start()
-    }
+        }
 
 
 

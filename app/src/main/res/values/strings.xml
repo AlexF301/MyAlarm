@@ -28,9 +28,14 @@
     <string name="thursday">T</string>
     <string name="friday">F</string>
     <string name="saturday">S</string>
+
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
+    <string name="cancel">Cancel</string>
+
+
 
 
 </resources>
