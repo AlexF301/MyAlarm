@@ -4,14 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.myalarm.database.Alarm
+import com.android.myalarm.databinding.AlarmItemBinding
 import com.android.myalarm.databinding.FragmentAlarmsListBinding
 import kotlinx.coroutines.launch
 
@@ -20,11 +19,28 @@ import kotlinx.coroutines.launch
  */
 class AlarmsListFragment : Fragment() {
 
+    /** binding for the views of the fragment (nullable version) */
     private var _binding: FragmentAlarmsListBinding? = null
 
-    // This property is only valid between onCreateView and onDestroyView.
-    private val binding get() = _binding!!
+    /** binding for the views of this fragment (non-nullable accessor)
+    This property is only valid between onCreateView and onDestroyView
+     */
+    private val binding: FragmentAlarmsListBinding
+        get() = checkNotNull(_binding) { getString(R.string.binding_failed) }
 
+    /**
+     *
+     */
+    private val viewModel: AlarmViewModel by viewModels()
+
+    /**
+     * the list of alarms
+     */
+    private var alarms: List<Alarm> = emptyList()
+
+    /**
+     * inflate the binding view for this fragment
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -32,7 +48,6 @@ class AlarmsListFragment : Fragment() {
         _binding = FragmentAlarmsListBinding.inflate(inflater, container, false)
 
         return binding.root
-
     }
 
     /**
@@ -41,6 +56,19 @@ class AlarmsListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val adapter = AlarmAdapter()
+        binding.alarmsList.adapter = adapter
+
+        // Use coroutine to collect alarms from the database
+        lifecycleScope.launch {
+            viewModel.alarms.collect {
+            }
+        }
+
+        // navigate to AlarmFragment when button is clicked
+        binding.createAlarmButton.setOnClickListener {
+            findNavController().navigate(AlarmsListFragmentDirections.createAlarm())
+        }
     }
 
     /**
@@ -51,74 +79,86 @@ class AlarmsListFragment : Fragment() {
         _binding = null
     }
 
-    class AlarmAdapter(
-        private var dataSet: MutableList<Alarm>, val onDeleteCallback: (Alarm) -> Unit
-    ) : RecyclerView.Adapter<AlarmAdapter.ViewHolder>() {
+    /**
+     *
+     */
+    private fun formatDaysSelected(list: List<String>): String {
+        return list.toString().replace("[", "").replace("]", "");
+    }
 
-        /**
-         * Provide a reference to the type of views that you are using
-         * (custom ViewHolder).
-         */
-        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
-            var alarmTime: TextView = itemView.findViewById(R.id.view_alarm_time)
-            var daysSelected: TextView = itemView.findViewById(R.id.days_set)
-            var alarmIsSet: CheckBox = itemView.findViewById(R.id.checkBox)
-            var alarmType : TextView = itemView.findViewById(R.id.alarm_type_show)
+    /**
+     *
+     */
+    private fun convertTo12HrView(hour: Int, minute: Int): String {
+        val formatMin = String.format("%02d", minute)
+        return if (hour >= 12) {
+            val amHour: Int = hour - 12
+            if (hour == 12)
+                "12:$formatMin PM"
+            else
+                "$amHour:$formatMin PM"
+        } else {
+            if (hour == 0)
+                "12:$formatMin AM"
+            else
+                "$hour:$formatMin AM"
+        }
+    }
 
-            init {
-                // Define click listener for the ViewHolder's View.
-                itemView.setOnClickListener(this)
-            }
+    /**
+     * Provide a reference to the type of views that you are using
+     */
+    private inner class AlarmViewHolder(val binding: AlarmItemBinding) :
+        RecyclerView.ViewHolder(binding.root),
+        View.OnClickListener {
 
-            override fun onClick(view: View) {
+        fun bind(alarm: Alarm) {
+            binding.apply {
+                alarmTime.text = convertTo12HrView(alarm.hour, alarm.minute)
+                alarmType.text = alarm.type.toString()
+                alarmStatusButton.isChecked = alarm.isOn
+                daysSet.text = formatDaysSelected(alarm.days)
             }
         }
 
-        // Create new views (invoked by the layout manager)
-        override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-            // Create a new view, which defines the UI of the list item
-            val view = LayoutInflater.from(viewGroup.context)
-                .inflate(R.layout.alarm_item, viewGroup, false)
-            return ViewHolder(view)
+        init {
+            // Define click listener for the ViewHolder's View.
+            itemView.setOnClickListener(this)
         }
 
-        // Replace the contents of a view (invoked by the layout manager)
-        override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+        override fun onClick(view: View) {
+        }
+    }
+
+    /**
+     * The adapter for the alarms recycler view. Populates the UI with the alarms the user has
+     * created
+     */
+    private inner class AlarmAdapter : RecyclerView.Adapter<AlarmViewHolder>() {
+
+        /** Creates a Viewholder by inflating the alarm_item layout */
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlarmViewHolder =
+            AlarmViewHolder(
+                AlarmItemBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
+
+        /** Replace the contents of a view with the data values at the position of the list */
+        override fun onBindViewHolder(viewHolder: AlarmViewHolder, position: Int) {
             // Get element from your dataset at this position and replace the
             // contents of the view with that element
-            val alarm: Alarm = dataSet[position]
+            viewHolder.bind(alarms[position])
 
-            viewHolder.alarmTime.text = convertTo12HrView(alarm.Hour, alarm.minute)
-            viewHolder.alarmType.text = alarm.type.toString()
-            viewHolder.alarmIsSet.isChecked = alarm.isOn
-            viewHolder.daysSelected.text = formatDaysSelected(alarm.days)
-            viewHolder.alarmIsSet.setOnClickListener {
-                onDeleteCallback(alarm)
-            }
+//            viewHolder.alarmIsSet.setOnClickListener {
+//                onDeleteCallback(alarm)
+//            }
         }
 
-        // Return the size of your dataset (invoked by the layout manager)
-        override fun getItemCount() = dataSet.size
-
-        private fun formatDaysSelected(list: List<String>): String {
-            return list.toString().replace("[", "").replace("]", "");
-        }
-
-        private fun convertTo12HrView(hour: Int, minute: Int): String {
-            val formatMin = String.format("%02d", minute)
-            return if (hour >= 12) {
-                val amHour: Int = hour - 12
-                if (hour == 12)
-                    "12:$formatMin PM"
-                else
-                    "$amHour:$formatMin PM"
-            } else {
-                if (hour == 0)
-                    "12:$formatMin AM"
-                else
-                    "$hour:$formatMin AM"
-            }
-        }
+        /** Return the size of the alarms list */
+        override fun getItemCount() = alarms.size
 //
 //        fun removeAt(adapterPosition: Int,vm : AlarmViewModel) {
 //            vm.delete(dataSet[adapterPosition])

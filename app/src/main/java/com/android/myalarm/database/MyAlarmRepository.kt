@@ -6,11 +6,11 @@ import kotlinx.coroutines.flow.Flow
 import java.util.*
 
 // Name of the Room Database Instance
-private const val DATABASE_NAME = "calendar_database"
+private const val DATABASE_NAME = "alarms_database"
 
 class MyAlarmRepository private constructor(context: Context) {
 
-    /** The database. */
+    /** The database */
     private val database: MyAlarmDatabase = Room
         .databaseBuilder(
             context.applicationContext,  // the context to use to access the database with
@@ -18,12 +18,22 @@ class MyAlarmRepository private constructor(context: Context) {
             DATABASE_NAME  // the name of the database
         )
         // pre-create from the given assets file - default events for when app is first installed
-        .createFromAsset(DATABASE_NAME)
         .build()  // create and return the database
 
-    /** The data access object */
+    /** The data access object to interact with our database*/
     private val dao = database.calendarDao()
 
+    /** add an alarm to the database */
+    suspend fun addAlarm(alarm: Alarm) = dao.addAlarm(alarm)
+
+    /** update an alarm in the database */
+    suspend fun updateAlarm(alarm: Alarm) = dao.updateAlarm(alarm)
+
+    /** delete an alarm in the database */
+    suspend fun deleteAlarm(alarm: Alarm) = dao.deleteAlarm(alarm)
+
+    /** get all alarms from the database */
+    fun getAllAlarms() = dao.getAllAlarms()
 
     companion object {
         /** The singleton instance of the repository. */

@@ -10,10 +10,10 @@
     tools:context=".AlarmFragment">
 
     <TimePicker
-        android:layout_marginTop="30dp"
         android:id="@+id/time_picker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
         android:timePickerMode="spinner"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -29,7 +29,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-<!--            TODO: Add feature to select multiple days in week -->
+            <include
+                android:id="@+id/day_picker"
+                layout="@layout/day_picker"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
             <androidx.appcompat.widget.AppCompatSeekBar
                 android:id="@+id/volume"
@@ -38,14 +42,15 @@
                 android:layout_marginStart="15sp"
                 android:layout_marginTop="70sp" />
 
-            <androidx.appcompat.widget.SwitchCompat
+            <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/vibration_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginTop="70sp"
                 android:layout_marginEnd="25sp"
-                android:drawableStart="@drawable/ic_baseline_vibration_24" />
+                android:drawableStart="@drawable/ic_baseline_vibration_24"
+                android:drawablePadding="5dp" />
 
             <TextView
                 android:id="@+id/select_alarm_type"
@@ -61,7 +66,6 @@
                 android:paddingStart="5sp"
                 android:paddingEnd="5sp"
                 android:text="@string/alarm_type"
-                android:textColor="?attr/colorSecondaryVariant"
                 android:textSize="18sp"
                 app:drawableEndCompat="@drawable/ic_baseline_edit_24" />
 
@@ -90,7 +94,6 @@
                 android:paddingStart="5sp"
                 android:paddingEnd="5sp"
                 android:text="@string/ringtone"
-                android:textColor="?attr/colorSecondaryVariant"
                 android:textSize="18sp"
                 app:drawableEndCompat="@drawable/ic_baseline_music_note_24" />
 
