@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    tools:context=".AlarmFragment">
 
     <ToggleButton
         android:id="@+id/sunday"
@@ -15,75 +16,75 @@
         android:layout_marginLeft="3dp"
         android:layout_marginRight="3dp"
         android:background="@drawable/button_selector_background"
-        android:textOff="@string/sunday"
-        android:textOn="@string/sunday"
+        android:textOff="@string/sunday_toggle"
+        android:textOn="@string/sunday_toggle"
         android:clickable="true"
         android:focusable="true" />
 
     <ToggleButton
-        android:id="@+id/tL"
+        android:id="@+id/monday"
         style="@style/toggleButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginLeft="3dp"
         android:layout_marginRight="3dp"
         android:background="@drawable/button_selector_background"
-        android:textOff="@string/monday"
-        android:textOn="@string/monday" />
+        android:textOff="@string/monday_toggle"
+        android:textOn="@string/monday_toggle" />
 
     <ToggleButton
-        android:id="@+id/tM"
+        android:id="@+id/tuesday"
         style="@style/toggleButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginLeft="3dp"
         android:layout_marginRight="3dp"
         android:background="@drawable/button_selector_background"
-        android:textOff="@string/tuesday"
-        android:textOn="@string/tuesday"
+        android:textOff="@string/tuesday_toggle"
+        android:textOn="@string/tuesday_toggle"
         tools:ignore="DuplicateSpeakableTextCheck" />
 
     <ToggleButton
-        android:id="@+id/tMi"
+        android:id="@+id/wednesday"
         style="@style/toggleButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginLeft="3dp"
         android:layout_marginRight="3dp"
         android:background="@drawable/button_selector_background"
-        android:textOff="@string/wednesday"
-        android:textOn="@string/wednesday" />
+        android:textOff="@string/wednesday_toggle"
+        android:textOn="@string/wednesday_toggle" />
 
     <ToggleButton
-        android:id="@+id/tJ"
+        android:id="@+id/thursday"
         style="@style/toggleButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginLeft="3dp"
         android:layout_marginRight="3dp"
         android:background="@drawable/selected_background"
-        android:textOff="@string/thursday"
-        android:textOn="@string/thursday" />
+        android:textOff="@string/thursday_toggle"
+        android:textOn="@string/thursday_toggle" />
 
     <ToggleButton
-        android:id="@+id/tV"
+        android:id="@+id/friday"
         style="@style/toggleButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginLeft="3dp"
         android:layout_marginRight="3dp"
         android:background="@drawable/selected_background"
-        android:textOff="@string/friday"
-        android:textOn="@string/friday" />
+        android:textOff="@string/friday_toggle"
+        android:textOn="@string/friday_toggle" />
 
     <ToggleButton
-        android:id="@+id/tS"
+        android:id="@+id/saturday"
         style="@style/toggleButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginLeft="3dp"
         android:layout_marginRight="3dp"
         android:background="@drawable/selected_background"
-        android:textOff="@string/saturday"
-        android:textOn="@string/saturday" />
+        android:textOff="@string/saturday_toggle"
+        android:textOn="@string/saturday_toggle" />
 </LinearLayout>

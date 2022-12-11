@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.myalarm.database.Alarm
+import com.android.myalarm.database.DayOfTheWeek
 import com.android.myalarm.databinding.AlarmItemBinding
 import com.android.myalarm.databinding.FragmentAlarmsListBinding
 import kotlinx.coroutines.launch
@@ -29,9 +30,9 @@ class AlarmsListFragment : Fragment() {
         get() = checkNotNull(_binding) { getString(R.string.binding_failed) }
 
     /**
-     *
+     * The viewModel for the views of the fragment
      */
-    private val viewModel: AlarmViewModel by viewModels()
+    private val viewModel: AlarmsViewModel by viewModels()
 
     /**
      * the list of alarms
@@ -56,12 +57,16 @@ class AlarmsListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.getAlarms()
+
         val adapter = AlarmAdapter()
         binding.alarmsList.adapter = adapter
 
         // Use coroutine to collect alarms from the database
         lifecycleScope.launch {
             viewModel.alarms.collect {
+                alarms = it
+                adapter.notifyDataSetChanged()
             }
         }
 
@@ -72,7 +77,7 @@ class AlarmsListFragment : Fragment() {
     }
 
     /**
-     *
+     * Clean up memory by clearing the binding
      */
     override fun onDestroyView() {
         super.onDestroyView()
@@ -82,8 +87,8 @@ class AlarmsListFragment : Fragment() {
     /**
      *
      */
-    private fun formatDaysSelected(list: List<String>): String {
-        return list.toString().replace("[", "").replace("]", "");
+    private fun formatDaysSelected(list: MutableList<DayOfTheWeek>): String {
+        return list.toString().replace("[", "").replace("]", "")
     }
 
     /**
@@ -116,8 +121,8 @@ class AlarmsListFragment : Fragment() {
             binding.apply {
                 alarmTime.text = convertTo12HrView(alarm.hour, alarm.minute)
                 alarmType.text = alarm.type.toString()
-                alarmStatusButton.isChecked = alarm.isOn
-                daysSet.text = formatDaysSelected(alarm.days)
+                alarmStatusButton.isChecked = alarm.alarmState
+                daysSet.text = formatDaysSelected(alarm.daysSelected)
             }
         }
 

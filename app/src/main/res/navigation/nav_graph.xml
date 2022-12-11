@@ -9,7 +9,7 @@
         android:id="@+id/nav_alarmsListFragment"
         android:name="com.android.myalarm.AlarmsListFragment"
         android:label="fragment_alarms_list"
-        tools:layout="@layout/fragment_alarms_list" >
+        tools:layout="@layout/fragment_alarms_list">
         <action
             android:id="@+id/create_alarm"
             app:destination="@id/nav_alarmFragment" />
@@ -18,7 +18,10 @@
         android:id="@+id/nav_alarmFragment"
         android:name="com.android.myalarm.AlarmFragment"
         android:label="fragment_alarm"
-        tools:layout="@layout/fragment_alarm" >
+        tools:layout="@layout/fragment_alarm">
+        <action
+            android:id="@+id/nav_select_alarm_type"
+            app:destination="@id/alarmTypeFragment" />
     </fragment>
     <fragment
         android:id="@+id/nav_stopWatchFragment"
@@ -30,4 +33,9 @@
         android:name="com.android.myalarm.TimerFragment"
         android:label="fragment_timer"
         tools:layout="@layout/fragment_timer" />
+    <fragment
+        android:id="@+id/alarmTypeFragment"
+        android:name="com.android.myalarm.AlarmTypeFragment"
+        android:label="fragment_alarm_type_list"
+        tools:layout="@layout/fragment_alarm_type_list" />
 </navigation>

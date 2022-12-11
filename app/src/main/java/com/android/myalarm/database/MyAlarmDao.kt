@@ -2,6 +2,7 @@ package com.android.myalarm.database
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 
 /**
  * The data access object for performing queries involving events.
@@ -24,16 +25,18 @@ interface MyAlarmDao {
     /** update the status of the alarm (enabled or disable
      * TODO: does this even have to be used since theres already an update method
      */
-    @Query("UPDATE alarms SET alarm_state=:enable WHERE alarm_id=:id ")
-    fun updateIsOn(enable: Boolean, id: Long?)
+    @Query("UPDATE alarm SET alarmState=:enable WHERE alarmId=:alarmId")
+    fun updateIsOn(enable: Boolean, alarmId: Long?)
 
     /** get all the alarms from the database */
-    @Query("SELECT * FROM alarms")
+    @Query("SELECT * FROM alarm")
     fun getAllAlarms(): Flow<List<Alarm>>
 
-//    /**
-//
-//     */
-//    @Query("SELECT alarm_id FROM alarms where hour = :hour AND minute = :minute AND days_selected = :days")
-//    fun getAlarm(hour: Int, minute: Int, days: List<String>): Flow<Alarm>
+    /** get an Alarm by its id */
+    @Query("SELECT * FROM alarm WHERE alarmId=(:alarmId) LIMIT 1")
+    suspend fun getAlarmById(alarmId : UUID) : Alarm
+
+    /** Gets an alarm based off the specified hour, minute, and days selected */
+    @Query("SELECT EXISTS(SELECT alarmId FROM alarm where hour = :hour AND minute = :minute AND daysSelected = :days)")
+    suspend fun getAlarm(hour: Int, minute: Int, days: MutableList<DayOfTheWeek>): Boolean
 }

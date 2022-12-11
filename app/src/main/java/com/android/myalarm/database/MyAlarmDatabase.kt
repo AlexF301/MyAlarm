@@ -10,7 +10,7 @@ import androidx.room.TypeConverters
  * The data access object is an instance of the CalendarDao class.
  */
 // This database has a single table that is reflected in the Event class.
-@Database(entities = [ Alarm::class ], version=0)
+@Database(entities = [ Alarm::class ], version=1)
 
 // The values in this table are converted using the CalendarTypeConverter class.
 @TypeConverters(MyAlarmTypeConverter::class)

@@ -2,7 +2,6 @@ package com.android.myalarm.database
 
 import android.content.Context
 import androidx.room.Room
-import kotlinx.coroutines.flow.Flow
 import java.util.*
 
 // Name of the Room Database Instance
@@ -23,17 +22,40 @@ class MyAlarmRepository private constructor(context: Context) {
     /** The data access object to interact with our database*/
     private val dao = database.calendarDao()
 
-    /** add an alarm to the database */
+    /** add an alarm to the database
+     * @param alarm: The Alarm being added into the database
+     */
     suspend fun addAlarm(alarm: Alarm) = dao.addAlarm(alarm)
 
-    /** update an alarm in the database */
+    /** update an alarm in the database
+     * @param alarm: The alarm to update
+     */
     suspend fun updateAlarm(alarm: Alarm) = dao.updateAlarm(alarm)
 
-    /** delete an alarm in the database */
+    /** delete an alarm in the database
+     * @param alarm: Alarm to delete from the database
+     */
     suspend fun deleteAlarm(alarm: Alarm) = dao.deleteAlarm(alarm)
 
     /** get all alarms from the database */
     fun getAllAlarms() = dao.getAllAlarms()
+
+    /** Gets an Alarm based off the specified hour, minute, and days selected. References the dao
+     * object which queries the database with the specified attributes. If an alarm with the
+     * specified attributes exists, returns true. Otherwise returns false.
+     * @param hour: hour the alarm is set to
+     * @param minute: minute the alarm is set to
+     * @param daysSelected: the days the alarm is set to
+     * @return true if the alarm with the specified attributes exists in the database
+     */
+    suspend fun getAlarm(hour: Int, minute: Int, daysSelected: MutableList<DayOfTheWeek>): Boolean = dao.getAlarm(hour, minute, daysSelected)
+
+
+    /** get an Alarm by its id
+     * @param alarmId: The id of an alarm to query for in the database
+     * @return The Alarm associated with the provided alarmId
+     */
+    suspend fun getAlarmByID(alarmId : UUID) : Alarm = dao.getAlarmById(alarmId)
 
     companion object {
         /** The singleton instance of the repository. */

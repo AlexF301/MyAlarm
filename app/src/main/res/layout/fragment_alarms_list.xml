@@ -6,13 +6,43 @@
     android:layout_height="match_parent"
     tools:context=".AlarmsListFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/alarms_list"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
+        android:orientation="vertical">
 
-    </androidx.recyclerview.widget.RecyclerView>
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="15dp"
+            android:layout_weight="3"
+            android:elevation="10dp"
+            android:background="@drawable/alarms_list_fragment_top_half_ui" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:textSize="15sp"
+            android:text="@string/alarms"
+            android:textColor="@color/design_default_color_on_secondary"
+            android:layout_height="wrap_content"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/alarms_list"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </LinearLayout>
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/create_alarm_button"
