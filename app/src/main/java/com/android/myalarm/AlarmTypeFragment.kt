@@ -1,20 +1,47 @@
 package com.android.myalarm
 
+import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemClickListener
+import androidx.activity.OnBackPressedCallback
+import androidx.core.os.bundleOf
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.android.myalarm.database.AlarmType
 import com.android.myalarm.databinding.AlarmTypeItemBinding
 import com.android.myalarm.databinding.FragmentAlarmTypeListBinding
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.launch
 
 /**
  * A fragment representing a list of Items.
  */
-class AlarmTypeFragment : Fragment() {
+class AlarmTypeFragment : BottomSheetDialogFragment() {
+
+    companion object {
+        /** All event types */
+        private val ALARM_TYPES = AlarmType.values()
+
+        /** The key used to send results back from fragment requests for event types */
+        const val REQUEST_KEY_ALARM_TYPE = "AlarmTypeFragment.ALARM_TYPE"
+
+        /** The key used for the selected time in the result bundle */
+        const val BUNDLE_KEY_ALARM_TYPE = "ALARM_TYPE"
+    }
 
     /** binding for the views of the fragment (nullable version) */
     private var _binding: FragmentAlarmTypeListBinding? = null
@@ -24,9 +51,6 @@ class AlarmTypeFragment : Fragment() {
      */
     private val binding: FragmentAlarmTypeListBinding
         get() = checkNotNull(_binding) { getString(R.string.binding_failed) }
-
-    /** The viewModel for the current accessed Alarm */
-    private val alarmViewModel: AlarmViewModel by viewModels()
 
     /**
      * List of available Alarm Types
@@ -50,6 +74,7 @@ class AlarmTypeFragment : Fragment() {
         return binding.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -65,17 +90,57 @@ class AlarmTypeFragment : Fragment() {
     }
 
     /**
+     * Need to call onCreate in order to make a callback for whenever back button on device is pressed
+     * OnBackPress cannot be by itself in modal bottom sheet Fragment.
+     * dismisses the fragment on back press key
+     */
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        isCancelable = true
+        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                dismiss()
+            }
+        })
+    }
+
+    /**
+     * layout configuration for the bottom sheet fragment to display correctly
+     */
+    override fun onStart() {
+        super.onStart()
+
+        val mBottomBehavior = BottomSheetBehavior.from(requireView().parent as View)
+        mBottomBehavior.maxWidth = ViewGroup.LayoutParams.MATCH_PARENT
+        mBottomBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+    }
+
+
+    /**
+     * When fragment is dismissed, flags get cleared along with it
+     */
+    override fun dismiss() {
+        super.dismiss()
+        dialog?.window!!.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+    }
+
+    /**
      * Provide a reference to the type of views that you are using
      */
     private inner class AlarmTypeViewHolder(val binding: AlarmTypeItemBinding) :
-        RecyclerView.ViewHolder(binding.root){
+        RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(alarmType : AlarmType, description: Int) {
+        fun bind(alarmType: AlarmType, description: Int) {
             binding.apply {
                 alarmTypeName.text = alarmType.name
                 alarmTypeDesc.text = getString(description)
-                typeCard.setOnClickListener{
-                    alarmViewModel.type = alarmType
+                typeCard.setOnClickListener {
+                    setFragmentResult(
+                        REQUEST_KEY_ALARM_TYPE, bundleOf(
+                            BUNDLE_KEY_ALARM_TYPE to ALARM_TYPES[bindingAdapterPosition]
+                        )
+                    )
+                    findNavController().popBackStack()
                 }
             }
         }
@@ -107,14 +172,3 @@ class AlarmTypeFragment : Fragment() {
         override fun getItemCount() = alarmTypes.size
     }
 }
-
-
-//    private fun returnScrollingFragment(alarmType: AlarmType) {
-//        vm.type = alarmType
-//        val scrollingFragment = ScrollingFragment()
-//        activity?.supportFragmentManager?.beginTransaction()!!
-//            .replace(((view as ViewGroup).parent as View).id, scrollingFragment)
-//            .commit()
-//        val button = requireActivity().findViewById<Button>(R.id.create_alarm)
-//        button.isVisible = true
-//    }

@@ -36,6 +36,9 @@ interface MyAlarmDao {
     @Query("SELECT * FROM alarm WHERE alarmId=(:alarmId) LIMIT 1")
     suspend fun getAlarmById(alarmId : UUID) : Alarm
 
+    @Query("SELECT EXISTS(SELECT * FROM alarm WHERE alarmId=(:alarmId) LIMIT 1)")
+    suspend fun doesAlarmWithIdExists(alarmId: UUID) : Boolean
+
     /** Gets an alarm based off the specified hour, minute, and days selected */
     @Query("SELECT EXISTS(SELECT alarmId FROM alarm where hour = :hour AND minute = :minute AND daysSelected = :days)")
     suspend fun getAlarm(hour: Int, minute: Int, days: MutableList<DayOfTheWeek>): Boolean
