@@ -21,26 +21,8 @@ class StopWatchFragment : Fragment() {
     /** Binding for the views of the fragment (non-nullable accessor) */
     private val binding get() = _binding!!
 
-    /** milliseconds of the stopwatch */
-    private var millis : Double = 0.0
-
-    /** Seconds of the current stopwatch  */
-    private var seconds = 0L
-
-    /** Minutes of the current stopwatch  */
-    private var minutes = 0L
-
-    /** Hours of the current stopwatch */
-    private var hours = 0L
-
-    /** Milliseconds of the current stopwatch  */
-    private var milliseconds = 0L
-
     /** click counter to manipulate button strings  */
     private var clickCounter = 0
-
-    /** milliseconds that are used to reformat stopwatch time */
-    var accumulatedTime = 0L
 
 
     /** Creates the binding view for this layout */
@@ -64,19 +46,26 @@ class StopWatchFragment : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.stopWatchView.text = "$minutes:$seconds:$milliseconds"
+        binding.stopWatchView.text = getString(R.string.default_time)
 
         val handler = Handler(Looper.getMainLooper())
         val stopwatch = object: Runnable {
+            var accumulatedTime: Long = 0L
+            var started: Long = 0L
+
             override fun run() {
-                millis += 2.15
-                accumulatedTime = millis.toLong()
+                val now = System.currentTimeMillis()
+                if (started == 0L) {
+                    started = now
+                }
 
-                minutes = TimeUnit.MILLISECONDS.toMinutes(accumulatedTime)
-                seconds = TimeUnit.MILLISECONDS.toSeconds(accumulatedTime) - TimeUnit.MINUTES.toSeconds(minutes)
-                milliseconds = accumulatedTime - TimeUnit.SECONDS.toMillis(seconds) - TimeUnit.MINUTES.toMillis(minutes)
+                val elapsed = now - started + accumulatedTime
 
-                binding.stopWatchView.text = "$minutes:$seconds:$milliseconds"
+                val minutes = (elapsed / 1000) / 60
+                val seconds = (elapsed / 1000) % 60
+                val milliseconds = elapsed % 1000
+
+                binding.stopWatchView.text = getString(R.string.display_time, minutes, seconds, milliseconds)
                 handler.postDelayed(this, 1)
             }
         }
@@ -91,15 +80,15 @@ class StopWatchFragment : Fragment() {
             // initial start
             if (clickCounter == 1) {
                 binding.startStopWatch.text = getString(R.string.pause)
-            }
-            if (clickCounter % 2 == 0) {
+                stopwatch.started = 0
+                stopwatch.accumulatedTime = 0
+            } else if (clickCounter % 2 == 0) {
                 handler.removeCallbacks(stopwatch)
                 binding.startStopWatch.text = getString(R.string.resume)
+                stopwatch.accumulatedTime += System.currentTimeMillis() - stopwatch.started
+                stopwatch.started = 0
             } else {
-                if (clickCounter != 1) {
-                    millis -= 2
-                    binding.startStopWatch.text = getString(R.string.pause)
-                }
+                binding.startStopWatch.text = getString(R.string.pause)
             }
         }
 
@@ -107,10 +96,10 @@ class StopWatchFragment : Fragment() {
         // Triggered when the stop button is clicked
         binding.stopStopWatch.setOnClickListener {
             binding.stopStopWatch.isEnabled = false
-            millis = 0.0
+            stopwatch.started = 0
+            stopwatch.accumulatedTime = 0
             clickCounter = 0
             binding.startStopWatch.text = getString(R.string.start)
-            binding.stopWatchView.text = millis.toString()
             handler.removeCallbacks(stopwatch)
         }
 

@@ -37,6 +37,8 @@
     <string name="minutes">Minutos</string>
     <string name="seconds">Segundos</string>
 
+    <string name="display_time">%1$d:%2$02d:%3$03d</string>
+
 
 
 
@@ -50,4 +52,11 @@
     <string name="thursday">Jueves</string>
     <string name="friday">Viernes</string>
     <string name="saturday">Sabado</string>
+
+    <string name="alarm_notificaiton_channel">Canal de notificacion de alarma</string>
+    <string name="channel_description">Canal para notificaciones de alarma</string>
+    <string name="snooze">Posponer</string>
+
+    <string name="default_time">"0:00:000"</string>
+
 </resources>
