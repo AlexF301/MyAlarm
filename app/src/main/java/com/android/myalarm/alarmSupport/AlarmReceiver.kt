@@ -8,7 +8,9 @@ import android.content.Intent
 import android.media.AudioManager
 import android.media.RingtoneManager
 import android.net.Uri
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.EXTRA_NOTIFICATION_ID
 import androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC
@@ -18,9 +20,8 @@ import com.android.myalarm.R
 
 class AlarmReceiver : BroadcastReceiver() {
 
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onReceive(context: Context?, intent: Intent?) {
-
-        //val audioManager: AudioManager = context?.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
         val volume = intent?.extras?.getFloat("volume")
         val vibrate = intent?.extras?.getBoolean("vibrate")!!
@@ -35,8 +36,6 @@ class AlarmReceiver : BroadcastReceiver() {
             alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
         }
 
-        Log.w("here5", alarmUri.toString())
-
         val ringtoneServiceIntent = Intent(context, RingtoneService::class.java)
         ringtoneServiceIntent.putExtra("ringtone_selected", ringtone.toString())
         context?.startService(ringtoneServiceIntent)
@@ -49,10 +48,11 @@ class AlarmReceiver : BroadcastReceiver() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun createAlarmNotification(context: Context, alarmTitle: String) {
 
-        // Create an explicit intent for an Activity in your app
-//        val intent = Intent(context, AlertDetails::class.java).apply {
+//        // Create an explicit intent for an Activity in your app
+//        val intent = Intent(context, AlarmSetOffActivity::class.java).apply {
 //            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 //        }
 //        val pendingIntent: PendingIntent =
@@ -84,14 +84,14 @@ class AlarmReceiver : BroadcastReceiver() {
             fullScreenIntent,PendingIntent.FLAG_MUTABLE
         )
 
-        val builder = NotificationCompat.Builder(context, "alarms")
+        val builder = NotificationCompat.Builder(context, "alarms_notification")
             .setSmallIcon(R.drawable.ic_baseline_alarm_on_24)
             .setContentTitle(alarmTitle)
             // TODO: Provide Alarm time
             .setContentText(context.getString(R.string.alarm_name))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             // lauch activity intent
-            // .setContentIntent(pendingIntent)
+             //.setContentIntent(pendingIntent)
 //            .addAction(
 //                R.drawable.ic_baseline_snooze_24, context.getString(R.string.snooze),
 //                snoozePendingIntent
@@ -103,13 +103,10 @@ class AlarmReceiver : BroadcastReceiver() {
 
 //        // Remember to save the notification ID that you pass to NotificationManagerCompat.notify()
 //        // because you'll need it later if you want to update or remove the notification.
-//        with(NotificationManagerCompat.from(context)) {
-//            // notificationId is a unique int for each notification that you must define
-//            // TODO: change id, set to 0 for now but don't know what that will do
-//            notify(0, builder.build())
-//        }
-        // Show the notification
-        val notificationManager = NotificationManagerCompat.from(context)
-        notificationManager.notify(0, builder.build())
+        with(NotificationManagerCompat.from(context)) {
+            // notificationId is a unique int for each notification that you must define
+            // TODO: change id, set to 0 for now but don't know what that will do
+            notify(0, builder.build())
+        }
     }
 }

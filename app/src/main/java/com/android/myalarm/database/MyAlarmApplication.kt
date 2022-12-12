@@ -6,6 +6,8 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import com.android.myalarm.R
 
 /**
@@ -18,6 +20,7 @@ class MyAlarmApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         MyAlarmRepository.initialize(this)
+
         createNotificationChannel()
     }
 
@@ -33,8 +36,8 @@ class MyAlarmApplication : Application() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = Notification.CATEGORY_ALARM
             val descriptionText = getString(R.string.channel_description)
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel("alarms", name, importance).apply {
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel("alarms_notification", name, importance).apply {
                 description = descriptionText
             }
             // Register the channel with the system
