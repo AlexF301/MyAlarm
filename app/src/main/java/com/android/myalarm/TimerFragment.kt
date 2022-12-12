@@ -1,12 +1,8 @@
 package com.android.myalarm
 
-import android.content.ComponentName
 import android.content.Intent
-import android.content.ServiceConnection
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,8 +28,6 @@ class TimerFragment : Fragment() {
 
     /** The viewModel for the views of the fragment */
     private val viewModel: TimerViewModel by viewModels()
-
-    private var ringtoneService : RingtoneService? = null
 
     /** Creates the binding view for this layout */
     override fun onCreateView(
@@ -90,8 +84,8 @@ class TimerFragment : Fragment() {
      * it is done playing
      */
     fun startSound() {
-        val playRingtone = Intent(context, RingtoneService::class.java)
-        requireActivity().startService(playRingtone)
+//        val playRingtone = Intent(context, RingtoneService::class.java)
+//        requireActivity().startService(playRingtone)
 
         binding.reset?.isEnabled = true
         binding.reset?.isVisible = true
@@ -157,8 +151,8 @@ class TimerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.reset?.setOnClickListener {
-            val stopRingtone = Intent(context, RingtoneService::class.java)
-            requireActivity().stopService(stopRingtone)
+//            val stopRingtone = Intent(context, RingtoneService::class.java)
+//            requireActivity().stopService(stopRingtone)
         }
 
         // Triggered whenever the start button is clicked
@@ -195,6 +189,4 @@ class TimerFragment : Fragment() {
         }
         numberPicker()
     }
-
-
 }

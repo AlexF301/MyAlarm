@@ -63,7 +63,7 @@ class SelectRingtoneDialogFragment : BottomSheetDialogFragment() {
      */
     override fun dismiss() {
         super.dismiss()
-        stopRingtoneIfPlaying()
+        //stopRingtoneIfPlaying()
     }
 
     /**
@@ -135,8 +135,8 @@ class SelectRingtoneDialogFragment : BottomSheetDialogFragment() {
                     binding.ringtoneText.text = ringtone
                     binding.selectRingtone.isChecked = bindingAdapterPosition == lastPosition
                     binding.ringtonesCard.setOnClickListener {
-                        stopRingtoneIfPlaying()
-                        playRingtone(ringtoneUri)
+                     //   stopRingtoneIfPlaying()
+                      //  playRingtone(ringtoneUri)
 
                         val copyOfLastCheckedPosition: Int = lastPosition
                         lastPosition = bindingAdapterPosition

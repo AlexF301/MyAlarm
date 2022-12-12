@@ -2,6 +2,7 @@ package com.android.myalarm.alarmSupport
 
 import android.app.Service
 import android.content.Intent
+import android.icu.text.CaseMap.Lower
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.Ringtone
@@ -28,6 +29,8 @@ class RingtoneService : Service() {
         //activating alarm sound.
         //Sets universal scope for ringtonePlayer to be able to cancel later
         ringtonePlayer = RingtoneManager.getRingtone(baseContext, ringtone)
+
+        Log.w("here2", ringtonePlayer.toString())
 
         //local scope variable for a ringtone to play. Had to do due to some bullshit with null and
         //mutability. if need reminder remove this variable and replace with the ringtonePlayer var
@@ -57,9 +60,13 @@ class RingtoneService : Service() {
         ringtonePlayer?.stop()
     }
 
+    /**
+     * stop the service
+     */
     fun stop() {
+        Log.w("here", ringtonePlayer.toString())
         ringtonePlayer?.stop()
-        //stopSelf()
+        stopSelf()
     }
 
     ////////// Support binding this service and an activity - required to have service and activity interact //////////

@@ -43,7 +43,6 @@ class AlarmReceiver : BroadcastReceiver() {
         if (context != null) {
             // this don't work
             VibrationControl.vibrationConfiguration(context, vibrate)
-            //AudioControl.playAudio(context, alarmUri)
             createAlarmNotification(context, alarmTitle, alarmType)
         }
     }
@@ -81,8 +80,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val builder = NotificationCompat.Builder(context, "alarms_notification")
             .setSmallIcon(R.drawable.ic_baseline_alarm_on_24)
             .setContentTitle(alarmTitle)
-            // TODO: Provide Alarm time
-            .setContentText(alarmType)
+            .setContentText(context.getString(R.string.alarm_name))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
 //            .addAction(
 //                R.drawable.ic_baseline_snooze_24, context.getString(R.string.snooze),

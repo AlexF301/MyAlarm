@@ -89,8 +89,6 @@ class AlarmFragment : Fragment(), OnClickListener {
     /** The ringtone */
     var ringtoneUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
 
-    var ringtoneName : String = ""
-
     /** Seekbar used for user volume */
     lateinit var seekBar: SeekBar
 
@@ -251,7 +249,6 @@ class AlarmFragment : Fragment(), OnClickListener {
     private fun getAlarmTimesAndDates() {
         alarmViewModel.hour = timePicker.hour
         alarmViewModel.minute = timePicker.minute
-        alarmViewModel.alarmState = binding.vibrationSwitch.isChecked
     }
 
     /** updates the Alarm selected days based off the ToggleButton Clicked
