@@ -37,13 +37,9 @@
 
     <style name="Theme.MyAlarm.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-
-    <!--sADFawf-->
-    <style name="CustomBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
-    </style>
-
-    <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@android:color/transparent</item>
+    <style name="Theme.MyAlarm.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/alarm_clock</item>
+        <item name="windowSplashScreenAnimationDuration">3000</item>
+        <item name="postSplashScreenTheme">@style/Theme.MyAlarm</item>
     </style>
 </resources>
