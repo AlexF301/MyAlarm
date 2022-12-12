@@ -7,16 +7,14 @@ import android.media.AudioManager
 import android.media.Ringtone
 import android.media.RingtoneManager
 import android.net.Uri
+import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 
 class RingtoneService : Service() {
 
     var ringtonePlayer: Ringtone? = null
-
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
 
     override fun onStartCommand(intent: Intent? , flags : Int, startId : Int) : Int
     {
@@ -28,7 +26,8 @@ class RingtoneService : Service() {
         //Sets universal scope for ringtonePlayer to be able to cancel later
         ringtonePlayer = RingtoneManager.getRingtone(baseContext, ringtone)
 
-        //local scoop variable for a ringtone to play. Had to do due to some bullshit with null and
+        // TODO: I think it should just be ringtonePlayer, no localscope stuff
+        //local scope variable for a ringtone to play. Had to do due to some bullshit with null and
         //mutability. if need reminder remove this variable and replace with the ringtonePlayer var
         val localRingtonePlayerVar = ringtonePlayer
         //playing sound alarm
@@ -39,6 +38,7 @@ class RingtoneService : Service() {
                 .build()
             localRingtonePlayerVar?.audioAttributes = audioAttributes
             localRingtonePlayerVar?.isLooping = true
+            localRingtonePlayerVar?.volume = 0.5f
             localRingtonePlayerVar?.play()
 
         } else {
@@ -47,8 +47,20 @@ class RingtoneService : Service() {
         }
         return START_NOT_STICKY
     }
+
     override fun onDestroy() {
         super.onDestroy()
         ringtonePlayer?.stop()
     }
+
+    fun stop(){
+        ringtonePlayer?.stop()
+    }
+
+    ////////// Support binding this service and an activity - required to have service and activity interact //////////
+    inner class LocalBinder : Binder() {
+        fun getService(): RingtoneService = this@RingtoneService
+    }
+    private val binder: IBinder = LocalBinder()
+    override fun onBind(intent: Intent?): IBinder = binder
 }
