@@ -84,8 +84,8 @@ class TimerFragment : Fragment() {
      * it is done playing
      */
     fun startSound() {
-//        val playRingtone = Intent(context, RingtoneService::class.java)
-//        requireActivity().startService(playRingtone)
+        val playRingtone = Intent(context, RingtoneService::class.java)
+        requireActivity().startService(playRingtone)
 
         binding.reset?.isEnabled = true
         binding.reset?.isVisible = true
@@ -151,8 +151,8 @@ class TimerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.reset?.setOnClickListener {
-//            val stopRingtone = Intent(context, RingtoneService::class.java)
-//            requireActivity().stopService(stopRingtone)
+            val stopRingtone = Intent(context, RingtoneService::class.java)
+            requireActivity().stopService(stopRingtone)
         }
 
         // Triggered whenever the start button is clicked

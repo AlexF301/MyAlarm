@@ -43,9 +43,7 @@ class RingtoneService : Service() {
                 .build()
             localRingtonePlayerVar?.audioAttributes = audioAttributes
             localRingtonePlayerVar?.isLooping = true
-            if (volumeFloat != null) {
-                localRingtonePlayerVar?.volume = volumeFloat
-            }
+            localRingtonePlayerVar?.volume = .5f
             localRingtonePlayerVar?.play()
 
         } else {

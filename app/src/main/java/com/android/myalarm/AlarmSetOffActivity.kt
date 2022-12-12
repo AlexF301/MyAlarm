@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.IBinder
 import androidx.appcompat.app.AppCompatActivity
 import com.android.myalarm.alarmSupport.RingtoneService
+import com.android.myalarm.alarmSupport.VibrationControl
 import com.android.myalarm.databinding.ActivityAlarmSetOffBinding
 
 class AlarmSetOffActivity : AppCompatActivity() {
@@ -51,6 +52,7 @@ class AlarmSetOffActivity : AppCompatActivity() {
         binding.turnOffAlarm.setOnClickListener{
             unbindService(serviceConnection)
             ringtoneService?.stop()
+            VibrationControl.stopVibration()
             finish()
         }
     }
