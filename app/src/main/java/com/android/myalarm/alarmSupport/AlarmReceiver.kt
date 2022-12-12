@@ -17,6 +17,7 @@ import androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC
 import androidx.core.app.NotificationManagerCompat
 import com.android.myalarm.AlarmSetOffActivity
 import com.android.myalarm.R
+import com.android.myalarm.database.AlarmType
 
 class AlarmReceiver : BroadcastReceiver() {
 
@@ -27,9 +28,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val vibrate = intent?.extras?.getBoolean("vibrate")!!
         val alarmTitle = intent.extras?.getString("alarm_title")!!
         val ringtone = Uri.parse(intent.extras?.getString("ringtone"))
-
-        Log.w("here3", intent.extras?.getString("ringtone")!!)
-        Log.w("here2", ringtone.toString())
+        val alarmType = intent.extras!!.getString("type", AlarmType.Regular.name)
 
         var alarmUri = ringtone
         if (ringtone == null) {
@@ -44,20 +43,12 @@ class AlarmReceiver : BroadcastReceiver() {
         if (context != null) {
             // this don't work
             VibrationControl.vibrationConfiguration(context, vibrate)
-            //AudioControl.playAudio(context, alarmUri)
-            createAlarmNotification(context, alarmTitle)
+            createAlarmNotification(context, alarmTitle, alarmType)
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
-    private fun createAlarmNotification(context: Context, alarmTitle: String) {
-
-//        // Create an explicit intent for an Activity in your app
-//        val intent = Intent(context, AlarmSetOffActivity::class.java).apply {
-//            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-//        }
-//        val pendingIntent: PendingIntent =
-//            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+    private fun createAlarmNotification(context: Context, alarmTitle: String, alarmType: String) {
 
         // instead of launching an activity, you can do a variety of other things such as start
         // a BroadcastReceiver that performs a job in the background so the action does not
@@ -75,6 +66,7 @@ class AlarmReceiver : BroadcastReceiver() {
         // If the user's device is locked, a full-screen activity appears, covering the lockscreen.
         // If the user's device is unlocked, the notification appears in an expanded form that includes options for handling or dismissing the notification.
         val fullScreenIntent = Intent(context, AlarmSetOffActivity::class.java)
+        fullScreenIntent.putExtra("type", alarmType)
 
         // Set the flags for the intent
         fullScreenIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or
@@ -88,11 +80,8 @@ class AlarmReceiver : BroadcastReceiver() {
         val builder = NotificationCompat.Builder(context, "alarms_notification")
             .setSmallIcon(R.drawable.ic_baseline_alarm_on_24)
             .setContentTitle(alarmTitle)
-            // TODO: Provide Alarm time
             .setContentText(context.getString(R.string.alarm_name))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            // lauch activity intent
-             //.setContentIntent(pendingIntent)
 //            .addAction(
 //                R.drawable.ic_baseline_snooze_24, context.getString(R.string.snooze),
 //                snoozePendingIntent
@@ -106,7 +95,6 @@ class AlarmReceiver : BroadcastReceiver() {
 //        // because you'll need it later if you want to update or remove the notification.
         with(NotificationManagerCompat.from(context)) {
             // notificationId is a unique int for each notification that you must define
-            // TODO: change id, set to 0 for now but don't know what that will do
             notify(0, builder.build())
         }
     }

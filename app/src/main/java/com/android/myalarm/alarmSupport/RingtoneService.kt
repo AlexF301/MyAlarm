@@ -2,6 +2,7 @@ package com.android.myalarm.alarmSupport
 
 import android.app.Service
 import android.content.Intent
+import android.icu.text.CaseMap.Lower
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.Ringtone
@@ -16,19 +17,21 @@ class RingtoneService : Service() {
 
     var ringtonePlayer: Ringtone? = null
 
-    override fun onStartCommand(intent: Intent? , flags : Int, startId : Int) : Int
-    {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         //Receive alarm sound
-        val ringtoneString : String? = intent?.extras?.getString("ringtone_selected")
-        val volumeFloat : Float? = intent?.extras?.getFloat("volume_selected")
+        val ringtoneString: String? = intent?.extras?.getString("ringtone_selected")
+        val volumeFloat: Float? = intent?.extras?.getFloat("volume_selected", 0.5f)
 
-        val ringtone = Uri.parse(ringtoneString)
+        val ringtone =
+            if (ringtoneString == null) RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
+            else Uri.parse(ringtoneString)
 
         //activating alarm sound.
         //Sets universal scope for ringtonePlayer to be able to cancel later
         ringtonePlayer = RingtoneManager.getRingtone(baseContext, ringtone)
 
-        // TODO: I think it should just be ringtonePlayer, no localscope stuff
+        Log.w("here2", ringtonePlayer.toString())
+
         //local scope variable for a ringtone to play. Had to do due to some bullshit with null and
         //mutability. if need reminder remove this variable and replace with the ringtonePlayer var
         val localRingtonePlayerVar = ringtonePlayer
@@ -40,9 +43,7 @@ class RingtoneService : Service() {
                 .build()
             localRingtonePlayerVar?.audioAttributes = audioAttributes
             localRingtonePlayerVar?.isLooping = true
-            if (volumeFloat != null) {
-                localRingtonePlayerVar?.volume = volumeFloat
-            }
+            localRingtonePlayerVar?.volume = .5f
             localRingtonePlayerVar?.play()
 
         } else {
@@ -57,14 +58,20 @@ class RingtoneService : Service() {
         ringtonePlayer?.stop()
     }
 
-    fun stop(){
+    /**
+     * stop the service
+     */
+    fun stop() {
+        Log.w("here", ringtonePlayer.toString())
         ringtonePlayer?.stop()
+        stopSelf()
     }
 
     ////////// Support binding this service and an activity - required to have service and activity interact //////////
     inner class LocalBinder : Binder() {
         fun getService(): RingtoneService = this@RingtoneService
     }
+
     private val binder: IBinder = LocalBinder()
     override fun onBind(intent: Intent?): IBinder = binder
 }

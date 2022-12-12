@@ -19,12 +19,12 @@
     <string name="stopwatch">Cronometro</string>
     <string name="fab_content_desc">Agregar alarma</string>
     <string name="binding_failed">El enlace es nulo</string>
-    <string name="sunday_toggle">S</string>
-    <string name="monday_toggle">M</string>
-    <string name="tuesday_toggle">T</string>
-    <string name="wednesday_toggle">W</string>
-    <string name="thursday_toggle">T</string>
-    <string name="friday_toggle">F</string>
+    <string name="sunday_toggle">D</string>
+    <string name="monday_toggle">L</string>
+    <string name="tuesday_toggle">M</string>
+    <string name="wednesday_toggle">M</string>
+    <string name="thursday_toggle">J</string>
+    <string name="friday_toggle">V</string>
     <string name="saturday_toggle">S</string>
 
     <string name="start">Inicio</string>

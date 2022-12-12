@@ -1,13 +1,15 @@
 package com.android.myalarm
 
-import android.media.MediaPlayer
+import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.android.myalarm.alarmSupport.RingtoneService
 import com.android.myalarm.databinding.FragmentTimerBinding
 
 
@@ -24,12 +26,8 @@ class TimerFragment : Fragment() {
     /** Binding for the views of the fragment (non-nullable accessor) */
     private val binding get() = _binding!!
 
-    /** Media player instance */
-    private var mediaPlayer: MediaPlayer? = null
-
     /** The viewModel for the views of the fragment */
     private val viewModel: TimerViewModel by viewModels()
-
 
     /** Creates the binding view for this layout */
     override fun onCreateView(
@@ -86,11 +84,13 @@ class TimerFragment : Fragment() {
      * it is done playing
      */
     fun startSound() {
-        if (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer.create(context, R.raw.cow);
-        }
-        mediaPlayer?.start()
+        val playRingtone = Intent(context, RingtoneService::class.java)
+        requireActivity().startService(playRingtone)
+
+        binding.reset?.isEnabled = true
+        binding.reset?.isVisible = true
     }
+
 
 
     /**
@@ -150,6 +150,11 @@ class TimerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.reset?.setOnClickListener {
+            val stopRingtone = Intent(context, RingtoneService::class.java)
+            requireActivity().stopService(stopRingtone)
+        }
+
         // Triggered whenever the start button is clicked
         binding.startCountdown.setOnClickListener {
             binding.stopCountdown.isEnabled = true
@@ -184,6 +189,4 @@ class TimerFragment : Fragment() {
         }
         numberPicker()
     }
-
-
 }

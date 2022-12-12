@@ -1,31 +1,20 @@
 package com.android.myalarm
 
-import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemClickListener
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
-import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.android.myalarm.database.AlarmType
 import com.android.myalarm.databinding.AlarmTypeItemBinding
-import com.android.myalarm.databinding.FragmentAlarmTypeListBinding
+import com.android.myalarm.databinding.FragmentListBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.coroutines.launch
 
 /**
  * A fragment representing a list of Items.
@@ -44,12 +33,12 @@ class AlarmTypeFragment : BottomSheetDialogFragment() {
     }
 
     /** binding for the views of the fragment (nullable version) */
-    private var _binding: FragmentAlarmTypeListBinding? = null
+    private var _binding: FragmentListBinding? = null
 
     /** binding for the views of this fragment (non-nullable accessor)
     This property is only valid between onCreateView and onDestroyView
      */
-    private val binding: FragmentAlarmTypeListBinding
+    private val binding: FragmentListBinding
         get() = checkNotNull(_binding) { getString(R.string.binding_failed) }
 
     /**
@@ -69,7 +58,7 @@ class AlarmTypeFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentAlarmTypeListBinding.inflate(inflater, container, false)
+        _binding = FragmentListBinding.inflate(inflater, container, false)
 
         return binding.root
     }
@@ -147,8 +136,11 @@ class AlarmTypeFragment : BottomSheetDialogFragment() {
     }
 
     /**
-     * The adapter for the alarms recycler view. Populates the UI with the alarms the user has
-     * created
+     * The adapter for the alarms type recycler view. Populates the possible Alarm Types that can
+     * be selected. Although there are only two, if more types wanted to be added, easy to
+     * implement
+     * @param alarmTypes: the available AlarmTypes
+     * @param descriptions: descriptions of what an AlarmType is about
      */
     private inner class AlarmTypeAdapter(
         private var alarmTypes: List<AlarmType>,
