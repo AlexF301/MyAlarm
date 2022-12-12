@@ -21,7 +21,7 @@ class StopWatchFragment : Fragment() {
     /** Binding for the views of the fragment (non-nullable accessor) */
     private val binding get() = _binding!!
 
-    /** click counter to manipulate button strings  */
+    /** click counter to manipulate button strings */
     private var clickCounter = 0
 
 
