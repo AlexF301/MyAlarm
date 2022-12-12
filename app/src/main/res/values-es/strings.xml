@@ -50,4 +50,11 @@
     <string name="thursday">Jueves</string>
     <string name="friday">Viernes</string>
     <string name="saturday">Sabado</string>
+
+    <string name="alarm_notificaiton_channel">Canal de notification de alarma</string>
+    <string name="channel_description">canal para notificaciones de alarma</string>
+    <string name="snooze">Posponer</string>
+
+    <string name="default_">Defecto</string>
+
 </resources>

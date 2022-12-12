@@ -38,6 +38,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val ringtoneServiceIntent = Intent(context, RingtoneService::class.java)
         ringtoneServiceIntent.putExtra("ringtone_selected", ringtone.toString())
+        ringtoneServiceIntent.putExtra("volume_selected", volume)
         context?.startService(ringtoneServiceIntent)
 
         if (context != null) {

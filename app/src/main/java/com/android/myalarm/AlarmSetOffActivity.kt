@@ -49,6 +49,7 @@ class AlarmSetOffActivity : AppCompatActivity() {
 
         binding.turnOffAlarm.setOnClickListener{
             ringtoneService?.stop()
+            finish()
         }
     }
 

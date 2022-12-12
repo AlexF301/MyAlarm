@@ -35,14 +35,6 @@ class AlarmsViewModel : ViewModel() {
         }
     }
 
-    //private var alarmManager = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-    var volumeLevel: Int = 0
-    var vibrate: Boolean = true
-    var title: String = "Wake Up"
-    var ringtoneUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-    var ringtoneName: String = ""
-
     /**
      * delete an alarm
      */
@@ -53,49 +45,4 @@ class AlarmsViewModel : ViewModel() {
      */
     fun getAllAlarms() = repo.getAllAlarms()
 
-//    private fun updateAlarmManager(isOn: Boolean, alarm: Alarm, id: Long) {
-//        val alarmIntent = Intent(getApplication(), AlarmReceiver::class.java)
-//        alarmIntentExtras(alarmIntent)
-//
-//        val pendingIntent = PendingIntent.getBroadcast(
-//            getApplication(),
-//            id.toInt(),
-//            alarmIntent,
-//            PendingIntent.FLAG_IMMUTABLE // setting the mutability flag
-//        )
-//        if (isOn) {
-//            val calendar: Calendar = Calendar.getInstance()
-//            calendar.set(Calendar.HOUR_OF_DAY, alarm.Hour)
-//            calendar.set(Calendar.MINUTE, alarm.minute)
-//            calendar.set(Calendar.SECOND, 0)
-//
-//            evaluateAlarmTrigger(calendar)
-//
-//            alarmManager.setExactAndAllowWhileIdle(
-//                AlarmManager.RTC_WAKEUP,
-//                calendar.timeInMillis,
-//                pendingIntent
-//            )
-//        } else {
-//            alarmManager.cancel(pendingIntent)
-//        }
-//    }
-
-    private fun alarmIntentExtras(alarmIntent: Intent) {
-        alarmIntent.putExtra("volume", volumeLevel.toFloat())
-        alarmIntent.putExtra("vibrate", vibrate)
-        alarmIntent.putExtra("alarm_title", title)
-        alarmIntent.putExtra("ringtone", ringtoneUri.toString())
-    }
-
-    /**
-    AlarmManager would trigger if time for the alarm set has been passed on that day.
-    For example. If the time today was 11:00pm and an alarm was set for 10:50am, alarmManager
-    would trigger right away. Code below prevents that and sets any previous time to the
-    next day
-     **/
-    private fun evaluateAlarmTrigger(calendar: Calendar) {
-        if (System.currentTimeMillis() > calendar.timeInMillis)
-            calendar.add(Calendar.DATE, 1)
-    }
 }
