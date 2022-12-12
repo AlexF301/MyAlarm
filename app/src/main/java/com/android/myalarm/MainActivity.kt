@@ -1,18 +1,16 @@
 package com.android.myalarm
 
-import android.app.AlarmManager
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
+import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.findNavController
 import com.android.myalarm.databinding.ActivityMainBinding
-import java.security.Permission
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,10 +22,43 @@ class MainActivity : AppCompatActivity() {
         //installSplashScreen()
         setContentView(binding.root)
 
-        // TODO: AlerDialog or something to tell user to give app permssions
-
-        verifySystemPermissionForSettingExactAlarms()
+        //verifySystemPermissionForSettingExactAlarms()
+        //getPermissions()
         navigationBarSetup()
+    }
+
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when (requestCode) {
+            0 -> {
+                // If request is cancelled, the result arrays are empty.
+                if ((grantResults.isNotEmpty() &&
+                            grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                ) {
+                    // Permission is granted. Continue the action or workflow
+                    // in your app.
+                } else {
+                    // Explain to the user that the feature is unavailable because
+                    // the feature requires a permission that the user has denied.
+                    // At the same time, respect the user's decision. Don't link to
+                    // system settings in an effort to convince the user to change
+                    // their decision.
+                }
+                return
+            }
+
+            // Add other 'when' lines to check for other
+            // permissions this app might request.
+            else -> {
+                // Ignore all other requests.
+            }
+        }
     }
 
     /**
@@ -58,74 +89,70 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * To schedule exact alarms, user must provide system permissions to allow for setting Alarms
-     * and Reminders. Redirects user to these settings if permission is not provided.
-     */
-    private fun verifySystemPermissionForSettingExactAlarms() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val alarmManager =
-                ContextCompat.getSystemService(applicationContext, AlarmManager::class.java)
-            if (alarmManager?.canScheduleExactAlarms() == false) {
-                Intent().also { intent ->
-                    intent.action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
-                    startActivity(intent)
-                }
-            }
-        }
-    }
+//    /**
+//     * To schedule exact alarms, user must provide system permissions to allow for setting Alarms
+//     * and Reminders. Redirects user to these settings if permission is not provided.
+//     */
+//    private fun verifySystemPermissionForSettingExactAlarms() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+//            val alarmManager =
+//                ContextCompat.getSystemService(applicationContext, AlarmManager::class.java)
+//            if (alarmManager?.canScheduleExactAlarms() == false) {
+//                Intent().also { intent ->
+//                    intent.action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+//                    startActivity(intent)
+//                }
+//            }
+//        }
+//    }
 
-    private fun verifyPermissions() {
-        // Register the permissions callback, which handles the user's response to the
-        // system permissions dialog. Save the return value, an instance of
-        // ActivityResultLauncher. You can use either a val, as shown in this snippet,
-        // or a lateinit var in your onAttach() or onCreate() method.
-        val requestPermissionLauncher =
-            registerForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) { isGranted: Boolean ->
-                if (isGranted) {
-                    // Permission is granted. Continue the action or workflow in your
-                    // app.
-                } else {
-                    // Explain to the user that the feature is unavailable because the
-                    // feature requires a permission that the user has denied. At the
-                    // same time, respect the user's decision. Don't link to system
-                    // settings in an effort to convince the user to change their
-                    // decision.
+//    private fun verifyPermissions() {
+//        // Register the permissions callback, which handles the user's response to the
+//        // system permissions dialog. Save the return value, an instance of
+//        // ActivityResultLauncher. You can use either a val, as shown in this snippet,
+//        // or a lateinit var in your onAttach() or onCreate() method.
+//        val requestPermissionLauncher =
+//            registerForActivityResult(
+//                ActivityResultContracts.RequestPermission()
+//            ) { isGranted: Boolean ->
+//                if (isGranted) {
+//                    // Permission is granted. Continue the action or workflow in your
+//                    // app.
+//                } else {
+//                    // Explain to the user that the feature is unavailable because the
+//                    // feature requires a permission that the user has denied. At the
+//                    // same time, respect the user's decision. Don't link to system
+//                    // settings in an effort to convince the user to change their
+//                    // decision.
+//
+//                }
+//            }
+//    }
 
-                }
-            }
-    }
-
-    private fun getPermissions() {
-        when {
-            ContextCompat.checkSelfPermission(
-                applicationContext,
-                android.Manifest.permission_group.NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                // You can use the API that requires the permission.
-            }
-            shouldShowRequestPermissionRationale(
-                android.Manifest.permission_group.NOTIFICATIONS
-            ) -> {
-                // In an educational UI, explain to the user why your app requires this
-                // permission for a specific feature to behave as expected, and what
-                // features are disabled if it's declined. In this UI, include a
-                // "cancel" or "no thanks" button that lets the user continue
-                // using your app without granting the permission.
-                //showInContextUI(...)
-            }
-            else -> {
-                // You can directly ask for the permission.
-                requestPermissions(
-                    arrayOf(
-                        android.Manifest.permission_group.NOTIFICATIONS,
-                        android.Manifest.permission.SCHEDULE_EXACT_ALARM
-                    ),
-                    0
-                )
-            }
-        }
-    }
+//    @RequiresApi(Build.VERSION_CODES.S)
+//    private fun getScheduleExactAlarmPermissions() {
+//        when {
+//            ContextCompat.checkSelfPermission(
+//                applicationContext,
+//                android.Manifest.permission.SCHEDULE_EXACT_ALARM
+//            ) == PackageManager.PERMISSION_GRANTED -> {
+//                // You can use the API that requires the permission.
+//            }
+//            shouldShowRequestPermissionRationale(android.Manifest.permission.SCHEDULE_EXACT_ALARM) -> {
+//                // In an educational UI, explain to the user why your app requires this
+//                // permission for a specific feature to behave as expected, and what
+//                // features are disabled if it's declined. In this UI, include a
+//                // "cancel" or "no thanks" button that lets the user continue
+//                // using your app without granting the permission.
+//                //showInContextUI(...)
+//            }
+//            else -> {
+//                // You can directly ask for the permission.
+//                requestPermissions(
+//                    arrayOf(android.Manifest.permission.SCHEDULE_EXACT_ALARM),
+//                    0
+//                )
+//            }
+//        }
+//    }
 }

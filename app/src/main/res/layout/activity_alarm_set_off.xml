@@ -3,12 +3,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:background="@drawable/activity_alarm_set_off_background">
+    android:background="@drawable/activity_alarm_set_off_background"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/shake_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/shake_to_disable"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:visibility="invisible"
+        />
 
     <com.google.android.material.button.MaterialButton
+        android:layout_marginTop="20dp"
         android:id="@+id/turn_off_alarm"
         android:layout_width="wrap_content"
-        android:text="Turn Off"
+        android:text="@string/turn_off"
         android:layout_height="wrap_content"/>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

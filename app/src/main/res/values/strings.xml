@@ -55,5 +55,8 @@
     <string name="snooze">Snooze</string>
 
     <string name="default_">Default</string>
+    <string name="reset">Reset</string>
+    <string name="turn_off">Turn Off</string>
+    <string name="shake_to_disable">Shake your phone to disable alarm</string>
 
 </resources>

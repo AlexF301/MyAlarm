@@ -1,5 +1,7 @@
 package com.android.myalarm.database
 
+import android.media.RingtoneManager
+import android.net.Uri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.UUID
@@ -21,7 +23,8 @@ data class Alarm(
     var minute: Int = 0,
     var daysSelected: MutableList<DayOfTheWeek> = mutableListOf(DayOfTheWeek.NONE),
     var alarmState: Boolean = true,
-    var type : AlarmType = AlarmType.Regular
+    var type: AlarmType = AlarmType.Regular,
+    var ringTone: String = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM).toString()
 )
 
 /**

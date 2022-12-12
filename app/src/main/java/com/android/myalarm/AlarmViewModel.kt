@@ -1,11 +1,5 @@
 package com.android.myalarm
 
-import android.app.AlarmManager
-import android.content.Context
-import android.content.Intent
-import android.media.RingtoneManager
-import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -71,17 +65,6 @@ class AlarmViewModel(private val alarmId: UUID) : ViewModel() {
      *
      */
     suspend fun getAlarm() : Boolean = repo.getAlarm(hour, minute, daysSelected)
-
-    /**
-    AlarmManager would trigger if time for the alarm set has been passed on that day.
-    For example. If the time today was 11:00pm and an alarm was set for 10:50am, alarmManager
-    would trigger right away. Code below prevents that and sets any previous time to the
-    next day
-     **/
-    private fun evaluateAlarmTrigger(calendar: Calendar) {
-        if (System.currentTimeMillis() > calendar.timeInMillis)
-            calendar.add(Calendar.DATE, 1)
-    }
 
 }
 

@@ -25,6 +25,9 @@
         <action
             android:id="@+id/nav_select_alarm_type"
             app:destination="@id/alarmTypeFragment" />
+        <action
+            android:id="@+id/nav_select_ringtone"
+            app:destination="@id/selectRingtoneDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/nav_stopWatchFragment"
@@ -40,9 +43,11 @@
         android:id="@+id/alarmTypeFragment"
         android:name="com.android.myalarm.AlarmTypeFragment"
         android:label="AlarmTypeFragment"
-        tools:layout="@layout/fragment_alarm_type_list">
-<!--        <argument-->
-<!--            android:name="alarmId"-->
-<!--            app:argType="java.util.UUID" />-->
+        tools:layout="@layout/alarm_type_item">
     </dialog>
+    <dialog
+        android:id="@+id/selectRingtoneDialogFragment"
+        android:name="com.android.myalarm.SelectRingtoneDialogFragment"
+        android:label="SelectRingtoneDialogFragment"
+        tools:layout="@layout/ringtone_box"/>
 </navigation>

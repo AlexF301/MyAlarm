@@ -18,6 +18,7 @@ import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -88,6 +89,8 @@ class AlarmFragment : Fragment(), OnClickListener {
     /** The ringtone */
     var ringtoneUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
 
+    var ringtoneName : String = ""
+
     /** Seekbar used for user volume */
     lateinit var seekBar: SeekBar
 
@@ -146,6 +149,14 @@ class AlarmFragment : Fragment(), OnClickListener {
             }
         }
 
+        setFragmentResultListener(SelectRingtoneDialogFragment.REQUEST_KEY) { _, bundle ->
+            alarmViewModel.updateAlarm {
+                it.copy(
+                    ringTone = bundle.getString(SelectRingtoneDialogFragment.BUNDLE_KEY) as String
+                )
+            }
+        }
+
         // Create alarm
         binding.createAlarm.setOnClickListener {
             getAlarmTimesAndDates()
@@ -155,6 +166,7 @@ class AlarmFragment : Fragment(), OnClickListener {
             }
         }
 
+        // use coroutine to collect alarm from database
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 alarmViewModel.alarm.collect {
@@ -163,8 +175,6 @@ class AlarmFragment : Fragment(), OnClickListener {
                 }
             }
         }
-
-
 
         //instantiate seekBar
         seekBar = binding.volume
@@ -192,13 +202,11 @@ class AlarmFragment : Fragment(), OnClickListener {
              */
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
         })
-
-
     }
 
-
     /**
-     * Updates the ui, as well as navigating to the creation of the alarm
+     * Updates the ui
+     * Sets on OnClickListeners for Alarm Type and Ringtone Selection
      */
     private fun updateUI(alarm: Alarm) {
         binding.selectAlarmType.setOnClickListener {
@@ -206,6 +214,10 @@ class AlarmFragment : Fragment(), OnClickListener {
         }
         binding.alarmType.text = alarm.type.toString()
 
+        binding.ringtone.setOnClickListener {
+            findNavController().navigate(AlarmFragmentDirections.navSelectRingtone())
+        }
+        binding.ringtoneName.text = alarm.ringTone
     }
 
     /**
@@ -303,6 +315,7 @@ class AlarmFragment : Fragment(), OnClickListener {
         alarmIntent.putExtra("vibrate", vibrate)
         alarmIntent.putExtra("alarm_title", title)
         alarmIntent.putExtra("ringtone", ringtoneUri.toString())
+        alarmIntent.putExtra("type", alarm?.type)
     }
 
     /**
