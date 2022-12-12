@@ -99,6 +99,7 @@ class StopWatchFragment : Fragment() {
             stopwatch.started = 0
             stopwatch.accumulatedTime = 0
             clickCounter = 0
+            binding.stopWatchView.text = getString(R.string.default_time)
             binding.startStopWatch.text = getString(R.string.start)
             handler.removeCallbacks(stopwatch)
         }
