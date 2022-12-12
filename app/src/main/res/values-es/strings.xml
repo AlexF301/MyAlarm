@@ -37,9 +37,6 @@
     <string name="minutes">Minutos</string>
     <string name="seconds">Segundos</string>
 
-
-
-
     <string name="alarm_exists">La alarma con estas opciones ya existe</string>
     <string name="regular_description">Alarma normal</string>
     <string name="shake_description">Agitar el telefono para apagar la alarma</string>

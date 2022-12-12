@@ -37,9 +37,6 @@
     <string name="minutes">Minutes</string>
     <string name="seconds">Seconds</string>
 
-
-
-
     <string name="alarm_exists">Alarm with these options already exists</string>
     <string name="regular_description">Regular Alarm</string>
     <string name="shake_description">Shake phone to shut off Alarm</string>
