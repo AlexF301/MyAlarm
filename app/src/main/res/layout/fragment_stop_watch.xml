@@ -7,26 +7,20 @@
     android:layout_height="match_parent"
     tools:context=".StopWatchFragment" >
 
-    <Chronometer
-        android:id="@+id/chronometerStopWatch"
-        android:layout_width="94dp"
-        android:layout_height="104dp"
+
+
+
+    <TextView
+        android:id="@+id/stopWatchView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="50sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.674" />
-
-    <TextView
-        android:id="@+id/stopWatchView"
-        android:layout_width="135dp"
-        android:layout_height="95dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.448" />
+        app:layout_constraintVertical_bias="0.245" />
 
     <Button
         android:id="@+id/startStopWatch"
@@ -45,6 +39,7 @@
         android:id="@+id/stopStopWatch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:enabled="false"
         android:text="@string/stop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -1,107 +1,120 @@
 package com.android.myalarm
 
 import android.annotation.SuppressLint
-import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.SystemClock
+import android.os.*
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.android.myalarm.databinding.FragmentStopWatchBinding
+import java.util.concurrent.TimeUnit
 
 
 /**
+ * A fragment that allows a user to start, pause, resume, and stop a stopwatch.
  */
 class StopWatchFragment : Fragment() {
+
+    /** Binding for the views of the fragment (nullable version) */
     private var _binding: FragmentStopWatchBinding? = null
 
-    // This property is only valid between onCreateView and onDestroyView.
+    /** Binding for the views of the fragment (non-nullable accessor) */
     private val binding get() = _binding!!
 
+    /** milliseconds of the stopwatch */
+    private var millis : Double = 0.0
 
+    /** Seconds of the current stopwatch  */
+    private var seconds = 0L
+
+    /** Minutes of the current stopwatch  */
+    private var minutes = 0L
+
+    /** Hours of the current stopwatch */
+    private var hours = 0L
+
+    /** Milliseconds of the current stopwatch  */
+    private var milliseconds = 0L
+
+    /** click counter to manipulate button strings  */
+    private var clickCounter = 0
+
+    /** milliseconds that are used to reformat stopwatch time */
+    var accumulatedTime = 0L
+
+
+    /** Creates the binding view for this layout */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentStopWatchBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
+
+
     @SuppressLint("SetTextI18n")
+    /**
+     * Once the view is created, we create a handler with a runnable object to execute an incrementer
+     * every millisecond to simulate stopwatch functionality. Proceeds to format the milliseconds
+     * generated to be more user friendly. The user is then able to interact with the
+     * start, pause, resume, and stop buttons.
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.chronometerStopWatch.format = "%s:%S.%M"
-        binding.chronometerStopWatch.base = SystemClock.elapsedRealtime()
-        binding.chronometerStopWatch.start()
+        binding.stopWatchView.text = "$minutes:$seconds:$milliseconds"
 
+        val handler = Handler(Looper.getMainLooper())
+        val stopwatch = object: Runnable {
+            override fun run() {
+                millis += 2.15
+                accumulatedTime = millis.toLong()
 
-//        val textViewUpdaterThread = Thread {
-//            while (true) {
-//                runOnUiThread {
-//                    // get the current time in milliseconds
-//                    val currentTime = SystemClock.elapsedRealtime()
-//
-//                    // convert the time to seconds and milliseconds
-//                    val seconds = currentTime / 1000
-//                    val milliseconds = currentTime % 1000
-//
-//                    // update the text view with the current time
-//                    textView.text = "$seconds.$milliseconds"
-//                }
-//                Thread.sleep(1)
-//            }
-//        }
+                minutes = TimeUnit.MILLISECONDS.toMinutes(accumulatedTime)
+                seconds = TimeUnit.MILLISECONDS.toSeconds(accumulatedTime) - TimeUnit.MINUTES.toSeconds(minutes)
+                milliseconds = accumulatedTime - TimeUnit.SECONDS.toMillis(seconds) - TimeUnit.MINUTES.toMillis(minutes)
 
-        var pls = 0
-        binding.startStopWatch.setOnClickListener { v ->
-            val thread = Thread {
-                while (true) {
-                    activity?.runOnUiThread {
-                        // get the current time in milliseconds
-                        val currentTime = SystemClock.elapsedRealtime()
-
-                        pls += 1
-
-                        // convert the time to seconds and milliseconds
-                        val seconds = currentTime / 1000
-                        val milliseconds = currentTime % 1000
-
-                        // update the text view with the current time
-                        binding.stopWatchView.text = pls.toString()
-                    }
-                    Thread.sleep(1)
-                }
+                binding.stopWatchView.text = "$minutes:$seconds:$milliseconds"
+                handler.postDelayed(this, 1)
             }
-            // start the thread
-            thread.start()
         }
 
-//        binding.chronometerStopWatch.setOnChronometerTickListener {
-//            // its only updating every second, not every millisecond
-//            val milliseconds = SystemClock.elapsedRealtime()
-//            binding.stopWatchView.text = milliseconds.toString()
-//        }
+
+        // Triggered when the start button is clicked
+        binding.startStopWatch.setOnClickListener {
+            binding.stopStopWatch.isEnabled = true
+            clickCounter ++
+            handler.post(stopwatch)
+
+            // initial start
+            if (clickCounter == 1) {
+                binding.startStopWatch.text = getString(R.string.pause)
+            }
+            if (clickCounter % 2 == 0) {
+                handler.removeCallbacks(stopwatch)
+                binding.startStopWatch.text = getString(R.string.resume)
+            } else {
+                if (clickCounter != 1) {
+                    millis -= 2
+                    binding.startStopWatch.text = getString(R.string.pause)
+                }
+            }
+        }
 
 
-//        stopWatch()
+        // Triggered when the stop button is clicked
+        binding.stopStopWatch.setOnClickListener {
+            binding.stopStopWatch.isEnabled = false
+            millis = 0.0
+            clickCounter = 0
+            binding.startStopWatch.text = getString(R.string.start)
+            binding.stopWatchView.text = millis.toString()
+            handler.removeCallbacks(stopwatch)
+        }
+
     }
 
 
-    private fun stopWatch() {
-        // On the first click create a variable: (START BUTTON)
-        val startTime = System.currentTimeMillis()
-
-        // MAYBE USE THIS INSTEAD
-        // val startTime = SystemClock.elapsedRealtime()
-
-        // Then on the second click you can calculate the difference: (STOP BUTTON)
-        val difference = System.currentTimeMillis() - startTime
-        binding.stopWatchView.text = startTime.toString()
-        // difference / 1000 will give you the difference in seconds.
-
-    }
 }

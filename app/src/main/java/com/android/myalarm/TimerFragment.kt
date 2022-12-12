@@ -11,23 +11,22 @@ import com.android.myalarm.databinding.FragmentTimerBinding
 
 
 /**
- * ADD DOCUMENTATION HERE!!!!!!
- * ADD DOCUMENTATION HERE!!!!!!
- * ADD DOCUMENTATION HERE!!!!!!
+ * A fragment that allows a user to create a timer based on the hours, minutes, and seconds they
+ * pick. A sound will play alerting the user their alarm is going off, in which case the user
+ * can shake their phone and it will stop playing.
  */
 class TimerFragment : Fragment() {
 
-    /** SOMETHING HERE */
+    /** Binding for the views of the fragment (nullable version) */
     private var _binding: FragmentTimerBinding? = null
 
-    // This property is only valid between onCreateView and onDestroyView.
-    /** SOMETHING HERE */
+    /** Binding for the views of the fragment (non-nullable accessor) */
     private val binding get() = _binding!!
 
     /** Logic tool to pause/resume timer */
     private var counter = 0
 
-    /** How much time a timer has*/
+    /** How much time a timer has remaining in a nice format */
     private var countdownTime = 0L
 
     /** Interval in which the timer increments down in (in milliseconds) */
@@ -39,13 +38,13 @@ class TimerFragment : Fragment() {
     /** Countdown timer object */
     private lateinit var timer: CountDownTimer
 
-    /** Hour the user chooses */
+    /** Hour the user chooses from the widget */
     private var hourPicker = 0L
 
-    /** Minute the user chooses */
+    /** Minute the user chooses from the widget */
     private var minutePicker = 0L
 
-    /** Second the user chooses */
+    /** Second the user chooses from the widget */
     private var secondPicker = 0L
 
     /** Hours of the remaining time */
@@ -58,9 +57,7 @@ class TimerFragment : Fragment() {
     private var seconds = 0L
 
 
-    /**
-     * ADD DOCUMENTATION FROM OLD HOMEWORKS HERE
-     */
+    /** Creates the binding view for this layout */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -76,7 +73,11 @@ class TimerFragment : Fragment() {
      * time has expired, the user specified sounds / ringtone will play.
      */
     private fun start(userTime: Long) {
-        timer = object : CountDownTimer((userTime * 1000), countdownInterval) { // prob change to 1000
+        timer = object : CountDownTimer((userTime * 1000), countdownInterval) {
+            /**
+             * Whenever a timer "ticks", the time variables are calculated and is then formatted
+             * to display to the user in a nice view.
+             */
             override fun onTick(millisUntilFinished: Long) {
                 hours = (millisUntilFinished / 1000) / 3600
                 minutes = (millisUntilFinished / 1000) % 3600 / 60
@@ -85,6 +86,11 @@ class TimerFragment : Fragment() {
                 binding.countdownView.text = String.format("%02d:%02d:%02d", hours, minutes, seconds)
             }
 
+            /**
+             * When the timer reaches 0, resets the timer and all corresponding variables, ensures
+             * the user cannot click the "stop" until a new timer has started, and plays a sounds
+             * to let the user know their timer is going off.
+             */
             override fun onFinish() {
                 timeRemaining = 0
                 Toast.makeText(activity, "Time is up", Toast.LENGTH_SHORT).show()
@@ -154,7 +160,8 @@ class TimerFragment : Fragment() {
 
 
     /**
-     * Starts / Pauses / Resumes / Stops the timer based on which button the user clicks.
+     * Once the view is created, the user is able to interact with the start, pause, resume, and stop
+     * button, and as a result, triggers different actions based on the time the user has chosen.
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -166,7 +173,7 @@ class TimerFragment : Fragment() {
 //            binding.startCountdown.isEnabled = false
 //        }
 
-
+        // Triggered whenever the start button is clicked
         binding.startCountdown.setOnClickListener {
             binding.stopCountdown.isEnabled = true
             setNumberPickerVisible(false)
@@ -174,7 +181,7 @@ class TimerFragment : Fragment() {
 
             // initial start
             if (counter == 1) {
-                start(parseTimeValues()) // change to user input
+                start(parseTimeValues())
                 binding.startCountdown.text = getString(R.string.pause)
             }
 
@@ -189,7 +196,7 @@ class TimerFragment : Fragment() {
             }
         }
 
-        // Resets the timer to its original state
+        // Triggered when the stop button is clicked
         binding.stopCountdown.setOnClickListener {
             timer.cancel()
             counter = 0
@@ -198,7 +205,6 @@ class TimerFragment : Fragment() {
             binding.startCountdown.text = getString(R.string.start)
             setNumberPickerVisible(true)
         }
-
         numberPicker()
     }
 
