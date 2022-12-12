@@ -1,5 +1,11 @@
 package com.android.myalarm
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,21 +16,31 @@ import android.widget.TimePicker
 import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.android.myalarm.alarmSupport.AlarmReceiver
 import com.android.myalarm.database.Alarm
 import com.android.myalarm.database.AlarmType
 import com.android.myalarm.database.DayOfTheWeek
 import com.android.myalarm.databinding.DayPickerBinding
 import com.android.myalarm.databinding.FragmentAlarmBinding
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.collections.HashMap
 
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
 class AlarmFragment : Fragment(), OnClickListener {
+
+    //TODO: fix problem with alarmType not being saved
 
     /** binding for the views of this fragments layout (nullable version) */
     private var _binding: FragmentAlarmBinding? = null
@@ -35,24 +51,20 @@ class AlarmFragment : Fragment(), OnClickListener {
     private val binding: FragmentAlarmBinding
         get() = checkNotNull(_binding) { getString(R.string.binding_failed) }
 
+    private val args: AlarmFragmentArgs by navArgs()
+
     /** binding for the views of the day_picker layout (non-nullable accessor)
      * This property is only valid between onCreateView and onDestroyView. Reference for the
      * ToggleButton selection(s)
      */
     private lateinit var dayPickerBinding: DayPickerBinding
 
-    /** The Alarm being accessed. Default values but are changed later */
-    private var alarm: Alarm = Alarm(
-        hour = 0,
-        minute = 0,
-        daysSelected = mutableListOf(),
-        alarmState = true,
-        type = AlarmType.Regular
-    )
+    /** The Alarm being accessed. Has default values but are changed later */
+    private var alarm: Alarm? = null
 
     /** The viewModel for the current accessed Alarm */
     private val alarmViewModel: AlarmViewModel by viewModels {
-        AlarmViewModelFactory(alarm.alarmId)
+        AlarmViewModelFactory(UUID.fromString(args.alarmId))
     }
 
     /** TimePicker widget which supplies user with time selection ability */
@@ -73,6 +85,8 @@ class AlarmFragment : Fragment(), OnClickListener {
     ): View {
 
         _binding = FragmentAlarmBinding.inflate(inflater, container, false)
+
+
 
         dayPickerBinding = binding.dayPicker
 
@@ -100,9 +114,20 @@ class AlarmFragment : Fragment(), OnClickListener {
         for (dayButtons in daysOfWeek.keys)
             dayButtons.setOnClickListener(this)
 
-        // When user selects on the text view to select an Alarm Type, navigates to the AlarmTypeFragment
-        binding.selectAlarmType.setOnClickListener {
-            findNavController().navigate(AlarmFragmentDirections.navSelectAlarmType())
+        // The updates the event (using the view model) with a copy of the old event with the type
+        // changed using the information from the bundle.
+        // Listen for dialog fragment results
+        setFragmentResultListener(AlarmTypeFragment.REQUEST_KEY_ALARM_TYPE) { _, bundle ->
+            alarmViewModel.updateAlarm {
+                it.copy(
+                    type = bundle.getSerializable(AlarmTypeFragment.BUNDLE_KEY_ALARM_TYPE) as AlarmType
+                )
+            }
+            Log.w(
+                "here324",
+                (bundle.getSerializable(AlarmTypeFragment.BUNDLE_KEY_ALARM_TYPE) as AlarmType).toString()
+            )
+            Log.w("here", alarm?.type.toString())
         }
 
         // Create alarm
@@ -112,6 +137,26 @@ class AlarmFragment : Fragment(), OnClickListener {
                 addAlarm()
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                alarmViewModel.alarm.collect {
+                    alarm = it
+                    alarm?.let { it1 -> updateUI(it1) }
+                    Log.w("here2", alarm.toString())
+                }
+            }
+        }
+    }
+
+    private fun updateUI(alarm: Alarm) {
+        Log.w("here3", alarm.type.toString())
+        // When user selects on the text view to select an Alarm Type, navigates to the AlarmTypeFragment
+        binding.selectAlarmType.setOnClickListener {
+            findNavController().navigate(AlarmFragmentDirections.navSelectAlarmType())
+        }
+        binding.alarmType.text = alarm.type.toString()
+
     }
 
     /**
@@ -120,18 +165,19 @@ class AlarmFragment : Fragment(), OnClickListener {
      * displaying a Toast
      */
     private suspend fun addAlarm() {
-        alarm.hour = alarmViewModel.hour
-        alarm.minute = alarmViewModel.minute
-        alarm.alarmState = alarmViewModel.alarmState
-        alarm.type = alarmViewModel.type
-        alarm.daysSelected = alarmViewModel.daysSelected
+        alarm?.hour = alarmViewModel.hour
+        alarm?.minute = alarmViewModel.minute
+        alarm?.alarmState = alarmViewModel.alarmState
+        alarm?.type = alarmViewModel.type
+        alarm?.daysSelected = alarmViewModel.daysSelected
+
+        Log.w("here", alarm?.type.toString())
 
         if (!alarmViewModel.getAlarm()) {
-            alarmViewModel.addAlarm(alarm)
+            alarm?.let { alarmViewModel.addAlarm(it) }
             findNavController().popBackStack()
         } else
             Toast.makeText(requireActivity(), R.string.alarm_exists, Toast.LENGTH_LONG).show()
-        Log.w("here", alarm.toString())
     }
 
     /** Clear up memory */
@@ -173,7 +219,7 @@ class AlarmFragment : Fragment(), OnClickListener {
         alarmViewModel.daysSelected.sort()
     }
 
-//    /**
+    //    /**
 //     * Whenever in SelectAlarmTypeFragment and SelectRingtoneFragment, the createAlarm button becomes
 //     * invisible and cannot be used for UI decisions. When pressing back from those fragments, button
 //     * becomes usable again by setting isVisible to true
@@ -188,5 +234,59 @@ class AlarmFragment : Fragment(), OnClickListener {
 //        // Creates intent to access RingtoneHelper service class to stop ringtone sound
 //        val playRingtone = Intent(applicationContext, RingtoneHelper::class.java)
 //        applicationContext.stopService(playRingtone)
+//    }
+
+//    private var alarmManager = requireActivity().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+//
+//    var volumeLevel: Int = 0
+//    var vibrate: Boolean = true
+//    var title: String = "Wake Up"
+//    var ringtoneUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+//    var ringtoneName: String = ""
+//
+//    private fun updateAlarmManager(isOn: Boolean, alarm: Alarm, id: Long) {
+//        val alarmIntent = Intent(context, AlarmReceiver::class.java)
+//        alarmIntentExtras(alarmIntent)
+//
+//        val pendingIntent = PendingIntent.getBroadcast(
+//            context,
+//            id.toInt(),
+//            alarmIntent,
+//            PendingIntent.FLAG_IMMUTABLE // setting the mutability flag
+//        )
+//        if (isOn) {
+//            val calendar: Calendar = Calendar.getInstance()
+//            calendar.set(Calendar.HOUR_OF_DAY, alarm.hour)
+//            calendar.set(Calendar.MINUTE, alarm.minute)
+//            calendar.set(Calendar.SECOND, 0)
+//
+//            evaluateAlarmTrigger(calendar)
+//
+//            alarmManager.setExactAndAllowWhileIdle(
+//                AlarmManager.RTC_WAKEUP,
+//                calendar.timeInMillis,
+//                pendingIntent
+//            )
+//        } else {
+//            alarmManager.cancel(pendingIntent)
+//        }
+//    }
+//
+//    private fun alarmIntentExtras(alarmIntent: Intent) {
+//        alarmIntent.putExtra("volume", volumeLevel.toFloat())
+//        alarmIntent.putExtra("vibrate", vibrate)
+//        alarmIntent.putExtra("alarm_title", title)
+//        alarmIntent.putExtra("ringtone", ringtoneUri.toString())
+//    }
+//
+//    /**
+//    AlarmManager would trigger if time for the alarm set has been passed on that day.
+//    For example. If the time today was 11:00pm and an alarm was set for 10:50am, alarmManager
+//    would trigger right away. Code below prevents that and sets any previous time to the
+//    next day
+//     **/
+//    private fun evaluateAlarmTrigger(calendar: Calendar) {
+//        if (System.currentTimeMillis() > calendar.timeInMillis)
+//            calendar.add(Calendar.DATE, 1)
 //    }
 }

@@ -17,11 +17,11 @@ import java.util.UUID
 data class Alarm(
     @PrimaryKey
     var alarmId: UUID = UUID.randomUUID(),
-    var hour: Int,
-    var minute: Int,
-    var daysSelected: MutableList<DayOfTheWeek>,
-    var alarmState: Boolean,
-    var type : AlarmType
+    var hour: Int = 7,
+    var minute: Int = 0,
+    var daysSelected: MutableList<DayOfTheWeek> = mutableListOf(DayOfTheWeek.NONE),
+    var alarmState: Boolean = true,
+    var type : AlarmType = AlarmType.Regular
 )
 
 /**

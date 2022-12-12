@@ -14,6 +14,7 @@ import com.android.myalarm.database.DayOfTheWeek
 import com.android.myalarm.databinding.AlarmItemBinding
 import com.android.myalarm.databinding.FragmentAlarmsListBinding
 import kotlinx.coroutines.launch
+import java.util.*
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -72,7 +73,8 @@ class AlarmsListFragment : Fragment() {
 
         // navigate to AlarmFragment when button is clicked
         binding.createAlarmButton.setOnClickListener {
-            findNavController().navigate(AlarmsListFragmentDirections.createAlarm())
+            // Provide a random UUID, this is messy as this id doesn't get used but needed
+            findNavController().navigate(AlarmsListFragmentDirections.createAlarm(UUID.randomUUID().toString()))
         }
     }
 

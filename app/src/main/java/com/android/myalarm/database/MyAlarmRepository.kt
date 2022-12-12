@@ -50,12 +50,16 @@ class MyAlarmRepository private constructor(context: Context) {
      */
     suspend fun getAlarm(hour: Int, minute: Int, daysSelected: MutableList<DayOfTheWeek>): Boolean = dao.getAlarm(hour, minute, daysSelected)
 
-
     /** get an Alarm by its id
      * @param alarmId: The id of an alarm to query for in the database
      * @return The Alarm associated with the provided alarmId
      */
     suspend fun getAlarmByID(alarmId : UUID) : Alarm = dao.getAlarmById(alarmId)
+
+    /**
+     *
+     */
+    suspend fun doesAlarmExistWithId(alarmId: UUID) : Boolean = dao.doesAlarmWithIdExists(alarmId)
 
     companion object {
         /** The singleton instance of the repository. */

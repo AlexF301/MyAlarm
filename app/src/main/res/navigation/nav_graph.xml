@@ -19,6 +19,9 @@
         android:name="com.android.myalarm.AlarmFragment"
         android:label="fragment_alarm"
         tools:layout="@layout/fragment_alarm">
+        <argument
+            android:name="alarmId"
+            app:argType="string"/>
         <action
             android:id="@+id/nav_select_alarm_type"
             app:destination="@id/alarmTypeFragment" />
@@ -33,9 +36,13 @@
         android:name="com.android.myalarm.TimerFragment"
         android:label="fragment_timer"
         tools:layout="@layout/fragment_timer" />
-    <fragment
+    <dialog
         android:id="@+id/alarmTypeFragment"
         android:name="com.android.myalarm.AlarmTypeFragment"
-        android:label="fragment_alarm_type_list"
-        tools:layout="@layout/fragment_alarm_type_list" />
+        android:label="AlarmTypeFragment"
+        tools:layout="@layout/fragment_alarm_type_list">
+<!--        <argument-->
+<!--            android:name="alarmId"-->
+<!--            app:argType="java.util.UUID" />-->
+    </dialog>
 </navigation>

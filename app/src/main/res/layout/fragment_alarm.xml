@@ -122,16 +122,16 @@
                 app:hintTextColor="@color/black"
                 tools:ignore="LabelFor" />
 
+            <Button
+                android:id="@+id/create_alarm"
+                android:layout_width="350dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:layout_marginTop="20dp"
+                android:text="@string/create_alarm" />
+
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     </ScrollView>
-
-    <Button
-        android:id="@+id/create_alarm"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_marginTop="20dp"
-        android:text="@string/create_alarm" />
 
 </LinearLayout>

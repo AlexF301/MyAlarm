@@ -12,7 +12,8 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-        <item name="android:background">@color/indigo_50</item>
+
+        <item name="android:windowBackground">@color/indigo_50</item>
     </style>
 
     <style name="Theme.MyAlarm.NoActionBar">
@@ -24,6 +25,7 @@
         <item name="android:background">@drawable/selected_background</item>
     </style>
 
+
     <style name="toggleButton" parent="Theme.MaterialComponents">
         <!-- item circle perimeter becomes yellow -->
         <item name="android:buttonStyleToggle">@style/Widget.Button.Toggle</item>
@@ -34,4 +36,14 @@
     <style name="Theme.MyAlarm.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.MyAlarm.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+
+    <!--sADFawf-->
+    <style name="CustomBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+    </style>
+
+    <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
 </resources>
