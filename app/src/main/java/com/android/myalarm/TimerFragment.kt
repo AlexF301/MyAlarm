@@ -1,13 +1,22 @@
 package com.android.myalarm
 
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorManager
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RawRes
 import androidx.fragment.app.Fragment
 import com.android.myalarm.databinding.FragmentTimerBinding
+import java.io.IOException
+import kotlin.math.abs
 
 
 /**
@@ -56,6 +65,32 @@ class TimerFragment : Fragment() {
     /** Seconds of the remaining time */
     private var seconds = 0L
 
+    /** The jerk/acceleration difference required to detect a shake, in m/s^2 */
+    val SHAKE_THRESHOLD = 3f
+
+    /** The minimum amount of time allowed between shakes, in nanoseconds */
+    val MIN_TIME_BETWEEN_SHAKES = 1000000000L
+
+    /** Last recorded acceleration */
+    private val lastAcceleration = floatArrayOf(0f, 0f, 0f)
+
+    /** Last time a shake was detected */
+    private var timestampOfLastChange: Long = 0
+
+    /** If this is the first event or not since resuming */
+    private var isFirstEvent = true
+
+    /** Media player instance */
+    private var mediaPlayer: MediaPlayer? = null
+
+    /** All of the known audio files */
+//    private val audios = intArrayOf(
+//        R.raw.train, R.raw.pew, R.raw.monkey, R.raw.kid_laugh, R.raw.dial_tone, R.raw.cow, R.raw.laugh
+//    )
+
+    private var sensorManager: SensorManager? = null
+    private var sensor: Sensor? = null
+
 
     /** Creates the binding view for this layout */
     override fun onCreateView(
@@ -64,7 +99,86 @@ class TimerFragment : Fragment() {
     ): View {
         // Inflates the layout for this fragment
         _binding = FragmentTimerBinding.inflate(inflater, container, false)
+        sensorManager = requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        sensor = sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         return binding.root
+    }
+
+
+    /**
+     *
+     */
+    fun onSensorChanged(event: SensorEvent) {
+        if (isShake(event.values, event.timestamp)) {
+            setAudioResource(R.raw.cow)
+            togglePlayback()
+        }
+
+    }
+
+    /**
+     *
+     */
+    fun onAccuracyChanged(p0: Sensor?, p1: Int) { }
+
+
+    /**
+     * Checks if the acceleration values in x, y, and z represent a "shake"
+     * operation: the jerk (difference in acceleration values) is greater than
+     * the SHAKE_THRESHOLD in at least 2 dimensions.
+     *
+     * @param acceleration array of accelerations in the x, y, and z directions
+     * @param timestamp timestamp of when the acceleration values were generated
+     * @return true if the data represents a shake
+     */
+    private fun isShake(acceleration: FloatArray, timestamp: Long): Boolean {
+        val isShake =
+            (!isFirstEvent && timestamp - timestampOfLastChange >= MIN_TIME_BETWEEN_SHAKES) &&
+                    acceleration.zip(lastAcceleration).count { (a, b) -> abs(a - b) > SHAKE_THRESHOLD } >= 2
+        // save for comparing to next time
+        acceleration.copyInto(lastAcceleration)
+        isFirstEvent = false
+        if (isShake) { timestampOfLastChange = timestamp }
+        return isShake
+    }
+
+
+    /**
+     * Toggles play back of the media player. If it is currently playing, it is
+     * stopped. If it is not currently playing, it is started.
+     */
+    private fun togglePlayback() {
+        mediaPlayer?.apply {
+            start()
+//            if (isPlaying) {
+//                // if currently playing, reset to beginning and pause
+//                seekTo(0)
+//                pause()
+//            } else {
+//                // if not currently playing, start playing
+//                start()
+//            }
+        }
+    }
+
+
+    /**
+     * Sets the audio being played from a resource ID. This re-uses the current
+     * media player object.
+     * @param resourceId the resource audio for the audio, like R.raw.monkey.
+     */
+    private fun setAudioResource(@RawRes resourceId: Int) {
+        val afd = resources.openRawResourceFd(resourceId)
+        try {
+            mediaPlayer?.apply {
+                reset()
+                setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+                prepare()
+                afd.close()
+            }
+        } catch (ex: IOException) {
+            Log.e("MainActivity", "set audio resource failed", ex)
+        }
     }
 
 
@@ -99,6 +213,8 @@ class TimerFragment : Fragment() {
                 counter = 0
                 setNumberPickerVisible(true)
                 binding.stopCountdown.isEnabled = false
+                setAudioResource(R.raw.cow)
+                togglePlayback()
 
                 // ADD CODE TO MAKE AN ALARM SOUND HAPPEN HERE!!!!!!
                 // ADD CODE TO MAKE AN ALARM SOUND HAPPEN HERE!!!!!!
