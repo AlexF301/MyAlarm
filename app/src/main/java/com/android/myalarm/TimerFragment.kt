@@ -31,7 +31,6 @@ class TimerFragment : Fragment() {
     private val viewModel: TimerViewModel by viewModels()
 
 
-
     /** Creates the binding view for this layout */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.media.AudioManager
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Bundle
@@ -11,9 +12,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
+import android.widget.SeekBar
 import android.widget.TimePicker
 import android.widget.Toast
 import android.widget.ToggleButton
+import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -33,7 +36,8 @@ import java.util.*
 
 
 /**
- * A simple [Fragment] subclass as the second destination in the navigation.
+ * A simple [Fragment] subclass as the second destination in the navigation. Responsible for
+ * creating an alarm.
  */
 class AlarmFragment : Fragment(), OnClickListener {
 
@@ -46,6 +50,7 @@ class AlarmFragment : Fragment(), OnClickListener {
     private val binding: FragmentAlarmBinding
         get() = checkNotNull(_binding) { getString(R.string.binding_failed) }
 
+    /** Used to pass the alarmId */
     private val args: AlarmFragmentArgs by navArgs()
 
     /** binding for the views of the day_picker layout (non-nullable accessor)
@@ -68,12 +73,26 @@ class AlarmFragment : Fragment(), OnClickListener {
     /** Each button corresponds to a day of the weak */
     private var daysOfWeek: HashMap<ToggleButton, DayOfTheWeek> = hashMapOf()
 
+    /** Alarm manager object*/
     private var alarmManager : AlarmManager? = null
 
-    var volumeLevel: Int = 5
+    /** Volume of the alarm */
+    var volumeLevel: Float = 0.0f
+
+    /** If the user wants the alarm to vibrate when finished*/
     var vibrate: Boolean = true
-    var title: String = "Wake Up"
+
+    /** Dummy value for the title of the alarm*/
+    var title: String = "hello"
+
+    /** The ringtone */
     var ringtoneUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+
+    /** Seekbar used for user volume */
+    lateinit var seekBar: SeekBar
+
+    /** The audio to pass user volume information*/
+    private lateinit var audioManager: AudioManager
 
     /**
      * Inflates the layouts for this fragment as well as the day_picker layout to access
@@ -87,6 +106,8 @@ class AlarmFragment : Fragment(), OnClickListener {
         _binding = FragmentAlarmBinding.inflate(inflater, container, false)
 
         alarmManager = requireActivity().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        audioManager = requireActivity().getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
         dayPickerBinding = binding.dayPicker
 
@@ -103,7 +124,7 @@ class AlarmFragment : Fragment(), OnClickListener {
     }
 
     /**
-     * Sets on click listeners for Alarm options
+     * Sets the on click listeners for the Alarm options
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -129,6 +150,7 @@ class AlarmFragment : Fragment(), OnClickListener {
         binding.createAlarm.setOnClickListener {
             getAlarmTimesAndDates()
             lifecycleScope.launch {
+                title = binding.alarmName.text.toString()
                 addAlarm()
             }
         }
@@ -141,10 +163,44 @@ class AlarmFragment : Fragment(), OnClickListener {
                 }
             }
         }
+
+
+
+        //instantiate seekBar
+        seekBar = binding.volume
+        seekBar.max = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        binding.volume.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            /**
+            * Checks the progress (position) of the seekBar
+            * @param seekBar the seekbar
+            * @param progress where the seekbar is located
+            * @param fromUser which user it is coming from
+            */
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                volumeLevel = progress.toFloat() / 10
+            }
+
+            /**
+            * Needed but not used
+            * @param seekBar the seekbar
+            */
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+
+            /**
+             * Needed but not used
+             * @param seekBar the seekbar
+             */
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+        })
+
+
     }
 
+
+    /**
+     * Updates the ui, as well as navigating to the creation of the alarm
+     */
     private fun updateUI(alarm: Alarm) {
-        // When user selects on the text view to select an Alarm Type, navigates to the AlarmTypeFragment
         binding.selectAlarmType.setOnClickListener {
             findNavController().navigate(AlarmFragmentDirections.navSelectAlarmType())
         }
@@ -162,7 +218,6 @@ class AlarmFragment : Fragment(), OnClickListener {
         alarm?.minute = alarmViewModel.minute
         alarm?.type = alarmViewModel.type
         alarm?.daysSelected = alarmViewModel.daysSelected
-
 
         if (!alarmViewModel.getAlarm()) {
             alarm?.let { alarmViewModel.addAlarm(it) }
@@ -211,6 +266,9 @@ class AlarmFragment : Fragment(), OnClickListener {
         alarmViewModel.daysSelected.sort()
     }
 
+    /**
+     * Updates the alarm based on user input.
+     */
     private fun updateAlarmManager(alarm: Alarm?) {
         val alarmIntent = Intent(context, AlarmReceiver::class.java)
         alarmIntentExtras(alarmIntent)
@@ -237,8 +295,11 @@ class AlarmFragment : Fragment(), OnClickListener {
         }
     }
 
+    /**
+     * Puts users intents to be used in other functions
+     */
     private fun alarmIntentExtras(alarmIntent: Intent) {
-        alarmIntent.putExtra("volume", volumeLevel.toFloat())
+        alarmIntent.putExtra("volume", volumeLevel)
         alarmIntent.putExtra("vibrate", vibrate)
         alarmIntent.putExtra("alarm_title", title)
         alarmIntent.putExtra("ringtone", ringtoneUri.toString())
@@ -254,4 +315,5 @@ class AlarmFragment : Fragment(), OnClickListener {
         if (System.currentTimeMillis() > calendar.timeInMillis)
             calendar.add(Calendar.DATE, 1)
     }
+
 }

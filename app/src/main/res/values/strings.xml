@@ -38,7 +38,7 @@
     <string name="seconds">Seconds</string>
 
 
-    <string name="display_time">%1$d:%2$02d:%3$03d</string>
+
 
     <string name="alarm_exists">Alarm with these options already exists</string>
     <string name="regular_description">Regular Alarm</string>
@@ -53,8 +53,4 @@
     <string name="alarm_notificaiton_channel">alarm notificaiton channel</string>
     <string name="channel_description">channel for alarm notifications</string>
     <string name="snooze">Snooze</string>
-
-    <string name="default_time">"0:00:000"</string>
-
-
 </resources>

@@ -20,6 +20,8 @@ class RingtoneService : Service() {
     {
         //Receive alarm sound
         val ringtoneString : String? = intent?.extras?.getString("ringtone_selected")
+        val volumeFloat : Float? = intent?.extras?.getFloat("volume_selected")
+
         val ringtone = Uri.parse(ringtoneString)
 
         //activating alarm sound.
@@ -38,7 +40,9 @@ class RingtoneService : Service() {
                 .build()
             localRingtonePlayerVar?.audioAttributes = audioAttributes
             localRingtonePlayerVar?.isLooping = true
-            localRingtonePlayerVar?.volume = 0.5f
+            if (volumeFloat != null) {
+                localRingtonePlayerVar?.volume = volumeFloat
+            }
             localRingtonePlayerVar?.play()
 
         } else {
