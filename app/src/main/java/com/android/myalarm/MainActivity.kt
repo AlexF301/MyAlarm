@@ -3,6 +3,7 @@ package com.android.myalarm
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -25,6 +26,11 @@ class MainActivity : AppCompatActivity() {
         //verifySystemPermissionForSettingExactAlarms()
         //getPermissions()
         navigationBarSetup()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.w("here", "paused")
     }
 
 

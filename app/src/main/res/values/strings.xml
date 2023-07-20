@@ -55,5 +55,8 @@
     <string name="reset">Reset</string>
     <string name="turn_off">Turn Off</string>
     <string name="shake_to_disable">Shake your phone to disable alarm</string>
+    <string name="display_time">%1$d:%2$02d:%3$03d</string>
+
+    <string name="default_time">00:00:000</string>
 
 </resources>

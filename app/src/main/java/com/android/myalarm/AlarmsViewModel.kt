@@ -1,8 +1,5 @@
 package com.android.myalarm
 
-import android.content.Intent
-import android.media.RingtoneManager
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.myalarm.database.Alarm
@@ -12,7 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.*
 
 class AlarmsViewModel : ViewModel() {
     /** The repository we are using to perform queries */

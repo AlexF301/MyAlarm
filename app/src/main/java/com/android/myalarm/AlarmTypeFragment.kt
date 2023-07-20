@@ -93,16 +93,16 @@ class AlarmTypeFragment : BottomSheetDialogFragment() {
         })
     }
 
-    /**
-     * layout configuration for the bottom sheet fragment to display correctly
-     */
-    override fun onStart() {
-        super.onStart()
-
-        val mBottomBehavior = BottomSheetBehavior.from(requireView().parent as View)
-        mBottomBehavior.maxWidth = ViewGroup.LayoutParams.MATCH_PARENT
-        mBottomBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-    }
+//    /**
+//     * layout configuration for the bottom sheet fragment to display correctly
+//     */
+//    override fun onStart() {
+//        super.onStart()
+//
+//        val mBottomBehavior = BottomSheetBehavior.from(requireView().parent as View)
+//        mBottomBehavior.maxWidth = ViewGroup.LayoutParams.MATCH_PARENT
+//        mBottomBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+//    }
 
 
     /**
