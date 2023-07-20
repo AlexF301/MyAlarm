@@ -1,14 +1,9 @@
 package com.android.myalarm
 
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.findNavController
 import com.android.myalarm.databinding.ActivityMainBinding
 
@@ -19,18 +14,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen()
         binding = ActivityMainBinding.inflate(layoutInflater)
-        //installSplashScreen()
         setContentView(binding.root)
 
         //verifySystemPermissionForSettingExactAlarms()
         //getPermissions()
         navigationBarSetup()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.w("here", "paused")
     }
 
 
