@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -12,8 +11,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.findNavController
 import com.android.myalarm.databinding.ActivityMainBinding
-
-private const val PERMISSION_REQUEST_CODE = 123 // Any unique value
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,11 +27,6 @@ class MainActivity : AppCompatActivity() {
         // The post notifications permission is only available for sdk's 33+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             requestNotificationPermission()
-
-        // SCHEDULE_EXACT_ALARMS permission is available after SDK 31 but does not need to be
-        // requested after SDK 33 because permission USE_EXACT_ALARMS is used instead and granted by default
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-            requestScheduleExactAlarmsPermission()
     }
 
     /**
@@ -63,13 +55,6 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun requestNotificationPermission() {
         requestPermission(Manifest.permission.POST_NOTIFICATIONS)
-    }
-
-
-    /** Requests the SCHEDULE_EXACT_ALARMS permission that is required for android sdk's 31 - 33 */
-    @RequiresApi(Build.VERSION_CODES.S)
-    private fun requestScheduleExactAlarmsPermission() {
-        requestPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
     }
 
 
