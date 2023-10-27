@@ -1,17 +1,13 @@
 package com.android.myalarm
 
-import android.app.AlarmManager
-import android.content.Intent
+import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
-import android.Manifest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.findNavController
@@ -29,11 +25,16 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-//        verifySystemPermissionForSettingExactAlarms()
-//        getScheduleExactAlarmPermissions()
         navigationBarSetup()
 
-        requestPermissions()
+        // The post notifications permission is only available for sdk's 33+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            requestNotificationPermission()
+
+        // SCHEDULE_EXACT_ALARMS permission is available after SDK 31 but does not need to be
+        // requested after SDK 33 because permission USE_EXACT_ALARMS is used instead and granted by default
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            requestScheduleExactAlarmsPermission()
     }
 
     /**
@@ -58,48 +59,45 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    /** Request the POST_NOTIFICATIONS permission that is required for android sdk 33+ */
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun requestNotificationPermission() {
+        requestPermission(Manifest.permission.POST_NOTIFICATIONS)
+    }
 
-    private fun requestPermissions() {
+
+    /** Requests the SCHEDULE_EXACT_ALARMS permission that is required for android sdk's 31 - 33 */
+    @RequiresApi(Build.VERSION_CODES.S)
+    private fun requestScheduleExactAlarmsPermission() {
+        requestPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
+    }
+
+
+    /** Generic method that takes the permission to request as a parameter */
+    private fun requestPermission(permission: String) {
         when {
             ContextCompat.checkSelfPermission(
                 this,
-                Manifest.permission.POST_NOTIFICATIONS
+                permission
             ) == PackageManager.PERMISSION_GRANTED -> {
                 // You can use the API that requires the permission.
             }
-            shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
-            // In an educational UI, explain to the user why your app requires this
-            // permission for a specific feature to behave as expected, and what
-            // features are disabled if it's declined. In this UI, include a
-            // "cancel" or "no thanks" button that lets the user continue
-            // using your app without granting the permission.
-//            showInContextUI(...)
-        }
+
+            shouldShowRequestPermissionRationale(permission) -> {
+                // In an educational UI, explain to the user why your app requires this
+                // permission for a specific feature to behave as expected, and what
+                // features are disabled if it's declined. In this UI, include a
+                // "cancel" or "no thanks" button that lets the user continue
+                // using your app without granting the permission.
+                // showInContextUI(...)
+            }
+
             else -> {
-                // You can directly ask for the permission.
+                // Directly ask for the permission.
                 // The registered ActivityResultCallback gets the result of this request.
-                requestPermissionLauncher.launch(
-                    Manifest.permission.POST_NOTIFICATIONS)
+                requestPermissionLauncher.launch(permission)
             }
         }
-
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//            val permissionResult =
-//                ContextCompat.checkSelfPermission(
-//                    this,
-//                    Manifest.permission.POST_NOTIFICATIONS
-//                ) != PackageManager.PERMISSION_GRANTED
-//
-//            if (!permissionResult) {
-//                // Permissions are not granted, so request them.
-//                shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
-//                ActivityCompat.requestPermissions(
-//                    this,
-//                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-//                    PERMISSION_REQUEST_CODE
-//                )
-//            }
-//        }
     }
 
 
@@ -131,23 +129,6 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 else -> false
-            }
-        }
-    }
-
-    /**
-     * To schedule exact alarms, user must provide system permissions to allow for setting Alarms
-     * and Reminders. Redirects user to these settings if permission is not provided.
-     */
-    private fun verifySystemPermissionForSettingExactAlarms() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val alarmManager =
-                ContextCompat.getSystemService(applicationContext, AlarmManager::class.java)
-            if (alarmManager?.canScheduleExactAlarms() == false) {
-                Intent().also { intent ->
-                    intent.action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
-                    startActivity(intent)
-                }
             }
         }
     }
