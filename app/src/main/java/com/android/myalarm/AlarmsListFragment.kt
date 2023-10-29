@@ -1,6 +1,8 @@
 package com.android.myalarm
 
 import android.annotation.SuppressLint
+import android.app.NotificationManager
+import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -20,10 +22,7 @@ import com.android.myalarm.database.DayOfTheWeek
 import com.android.myalarm.databinding.AlarmItemBinding
 import com.android.myalarm.databinding.FragmentAlarmsListBinding
 import kotlinx.coroutines.launch
-import java.lang.Math.abs
 import java.util.*
-import java.util.Collections.max
-import java.util.Collections.min
 import kotlin.math.max
 import kotlin.math.min
 
@@ -79,10 +78,15 @@ class AlarmsListFragment : Fragment() {
             }
         }
 
+        val notificationManager = context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
         // navigate to AlarmFragment when button is clicked
         binding.createAlarmButton.setOnClickListener {
-            // Provide a random UUID, this is messy as this id doesn't get used but needed
-            findNavController().navigate(AlarmsListFragmentDirections.createAlarm(UUID.randomUUID().toString()))
+            if (notificationManager.areNotificationsEnabled())
+                // Provide a random UUID, this is messy as this id doesn't get used but needed
+                findNavController().navigate(AlarmsListFragmentDirections.createAlarm(UUID.randomUUID().toString()))
+            else
+                displayNotificationPermissionContext()
         }
     }
 
@@ -93,6 +97,15 @@ class AlarmsListFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+
+    /**
+     * Displays to the user the reasoning for why the POST_NOTIFICATIONS permission need to be enabled
+     */
+    private fun displayNotificationPermissionContext() {
+        findNavController().navigate(AlarmsListFragmentDirections.enableNotificationsAnnouncement())
+    }
+
 
     /**
      * Formats the days of the week to be user friendly
