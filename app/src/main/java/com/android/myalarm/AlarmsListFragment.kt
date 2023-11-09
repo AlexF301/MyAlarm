@@ -3,16 +3,19 @@ package com.android.myalarm
 import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -26,6 +29,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
+
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation. Responsible for
@@ -86,11 +90,11 @@ class AlarmsListFragment : Fragment() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 // check whether the POST_NOTIFICATIONS permission is enabled
                 if (notificationManager.areNotificationsEnabled())
-                // Provide a random UUID, this is messy as this id doesn't get used but needed
+                    // Provide a random UUID, this is messy as this id doesn't get used but needed
                     findNavController().navigate(AlarmsListFragmentDirections.createAlarm(UUID.randomUUID().toString()))
                 else
-                // if POST_NOTIFICATIONS not enabled, prevent the user from creating an alarm
-                // and display a helpful IU to do so
+                    // if POST_NOTIFICATIONS not enabled, prevent the user from creating an alarm
+                    // and display a helpful IU to do so
                     displayNotificationPermissionContext()
             }
         }
@@ -109,7 +113,36 @@ class AlarmsListFragment : Fragment() {
      * Displays to the user the reasoning for why the POST_NOTIFICATIONS permission need to be enabled
      */
     private fun displayNotificationPermissionContext() {
+        setFragmentResultListener(
+            NotificationsContextDialogFragment.REQUEST_KEY_PERMISSIONS,
+        ) { _, bundle ->
+            val result = bundle.getBoolean(NotificationsContextDialogFragment.BUNDLE_KEY_)
+
+            if (result)
+                launchAppNotificationSettings()
+        }
+
         findNavController().navigate(AlarmsListFragmentDirections.enableNotificationsAnnouncement())
+    }
+
+    /**
+     * Launches an intent to the applications notification settings on the Android device
+     */
+    private fun launchAppNotificationSettings() {
+        val intent = Intent()
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        // SDk 26 +
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, context?.packageName)
+        } else { // SDK 24 - 25 (since current min supported sdk is 24)
+            intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
+            intent.putExtra("app_package", context?.packageName)
+            intent.putExtra("app_uid", context?.applicationInfo?.uid)
+        }
+
+        startActivity(intent)
     }
 
 
