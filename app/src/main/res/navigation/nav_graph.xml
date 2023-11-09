@@ -55,7 +55,7 @@
         tools:layout="@layout/ringtone_box"/>
     <dialog
         android:id="@+id/notificationsContextDialog"
-        android:name="com.android.myalarm.NotificationsContextDialog"
+        android:name="com.android.myalarm.NotificationsContextDialogFragment"
         android:label="fragment_notifications_context_dialog"
         tools:layout="@layout/fragment_notifications_context_dialog" />
 </navigation>

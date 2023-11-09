@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -82,11 +83,16 @@ class AlarmsListFragment : Fragment() {
 
         // navigate to AlarmFragment when button is clicked
         binding.createAlarmButton.setOnClickListener {
-            if (notificationManager.areNotificationsEnabled())
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                // check whether the POST_NOTIFICATIONS permission is enabled
+                if (notificationManager.areNotificationsEnabled())
                 // Provide a random UUID, this is messy as this id doesn't get used but needed
-                findNavController().navigate(AlarmsListFragmentDirections.createAlarm(UUID.randomUUID().toString()))
-            else
-                displayNotificationPermissionContext()
+                    findNavController().navigate(AlarmsListFragmentDirections.createAlarm(UUID.randomUUID().toString()))
+                else
+                // if POST_NOTIFICATIONS not enabled, prevent the user from creating an alarm
+                // and display a helpful IU to do so
+                    displayNotificationPermissionContext()
+            }
         }
     }
 

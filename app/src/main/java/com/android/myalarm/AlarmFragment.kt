@@ -16,9 +16,7 @@ import android.widget.SeekBar
 import android.widget.TimePicker
 import android.widget.Toast
 import android.widget.ToggleButton
-import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -33,7 +31,8 @@ import com.android.myalarm.database.DayOfTheWeek
 import com.android.myalarm.databinding.DayPickerBinding
 import com.android.myalarm.databinding.FragmentAlarmBinding
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Calendar
+import java.util.UUID
 
 
 /**

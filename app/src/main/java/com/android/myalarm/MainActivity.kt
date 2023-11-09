@@ -1,9 +1,11 @@
 package com.android.myalarm
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -69,12 +71,18 @@ class MainActivity : AppCompatActivity() {
             }
 
             shouldShowRequestPermissionRationale(permission) -> {
+                Log.w("here", "here")
                 // In an educational UI, explain to the user why your app requires this
                 // permission for a specific feature to behave as expected, and what
-                // features are disabled if it's declined. In this UI, include a
-                // "cancel" or "no thanks" button that lets the user continue
-                // using your app without granting the permission.
-                // showInContextUI(...)
+                // features are disabled if it's declined.
+
+                // Android 11 and up, once a permissions is initially denied, future attempts are
+                // prevented and the app can only try once more to display the permission prompt.
+                // This is the second attempt workflow
+                val dialogFragment = NotificationsContextDialogFragment()
+                dialogFragment.show(supportFragmentManager, NotificationsContextDialogFragment.TAG)
+
+                setNotificationsContextDialogListener()
             }
 
             else -> {
@@ -83,6 +91,34 @@ class MainActivity : AppCompatActivity() {
                 requestPermissionLauncher.launch(permission)
             }
         }
+    }
+
+    /**
+     * Sets up a FragmentResultListener on the NotificationsContextDialog to get the response
+     * whether the user wants to allow the POST_NOTIFICATIONS permission
+     *
+     * This should only trigger as a second attempt to request the notification (following the
+     * workflow for requesting runtime permissions):
+     *
+     * https://developer.android.com/static/images/training/permissions/workflow-runtime.svg)
+     *
+     * Only set up to listen when a user selects "allow" on the dialog which returns true. a return
+     * value of true -> display the prompt to request the permission.
+     *
+     * If the user selected "cancel" on the dialog then we shouldn't do anything more at this time
+     */
+    @SuppressLint("InlinedApi")
+    private fun setNotificationsContextDialogListener() {
+        supportFragmentManager
+            .setFragmentResultListener(
+                NotificationsContextDialogFragment.REQUEST_KEY_PERMISSIONS,
+                this
+            ) { _, bundle ->
+                val result = bundle.getBoolean(NotificationsContextDialogFragment.BUNDLE_KEY_)
+                // a return value of true -> display the prompt to request the permission.
+                if (result)
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
     }
 
 
