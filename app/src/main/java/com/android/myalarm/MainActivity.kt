@@ -2,6 +2,8 @@ package com.android.myalarm
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -18,13 +20,20 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private lateinit var preferences: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        preferences =
+            getSharedPreferences(getString(R.string.permission_pref), Context.MODE_PRIVATE)
+
         navigationBarSetup()
+
+        setAlarmsListFragmentListener()
 
         // The post notifications permission is only available for sdk's 33+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
@@ -34,8 +43,10 @@ class MainActivity : AppCompatActivity() {
     /**
      * Register the permissions callback, which handles the user's response to the
      * system permissions dialog. Save the return value, an instance of
-     * ActivityResultLauncher. You can use either a val, as shown in this snippet,
-     * or a lateinit var in your onAttach() or onCreate() method.
+     * ActivityResultLauncher.
+     *
+     * Calling updateRequestedPermissionPreference() in both to signify that the initial prompt
+     * has been used
      */
     val requestPermissionLauncher =
         registerForActivityResult(
@@ -44,12 +55,17 @@ class MainActivity : AppCompatActivity() {
             if (isGranted) {
                 // Permission is granted. Continue the action or workflow in your
                 // app.
+                updateRequestedPermissionPreference(R.string.requested_permission)
             } else {
-                // Explain to the user that the feature is unavailable because the
-                // feature requires a permission that the user has denied. At the
-                // same time, respect the user's decision. Don't link to system
-                // settings in an effort to convince the user to change their
-                // decision.
+                // This else means the permission has been denied, so if the if below returns true,
+                // then that means this would be the second time that the permission prompt request
+                // has been called and denied
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
+                    && preferences.getBoolean(getString(R.string.requested_permission), false)
+                )
+                    updateRequestedPermissionPreference(R.string.denied_twice)
+
+                updateRequestedPermissionPreference(R.string.requested_permission)
             }
         }
 
@@ -86,11 +102,18 @@ class MainActivity : AppCompatActivity() {
             }
 
             else -> {
+                Log.w("here", "here2")
                 // Directly ask for the permission.
                 // The registered ActivityResultCallback gets the result of this request.
                 requestPermissionLauncher.launch(permission)
             }
         }
+    }
+
+    private fun updateRequestedPermissionPreference(stringID: Int) {
+        val editor = preferences.edit()
+        editor.putBoolean(getString(stringID), true)
+        editor.apply()
     }
 
     /**
@@ -111,11 +134,29 @@ class MainActivity : AppCompatActivity() {
     private fun setNotificationsContextDialogListener() {
         supportFragmentManager
             .setFragmentResultListener(
-                NotificationsContextDialogFragment.REQUEST_KEY_PERMISSIONS,
+                NotificationsContextDialogFragment.REQUEST_KEY_PERMISSION_REQUEST,
                 this
             ) { _, bundle ->
-                val result = bundle.getBoolean(NotificationsContextDialogFragment.BUNDLE_KEY_)
+                val result =
+                    bundle.getBoolean(NotificationsContextDialogFragment.BUNDLE_KEY_PERMISSION_REQUEST)
                 // a return value of true -> display the prompt to request the permission.
+                if (result)
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+    }
+
+
+    @SuppressLint("InlinedApi")
+    private fun setAlarmsListFragmentListener() {
+        supportFragmentManager
+            .setFragmentResultListener(
+                AlarmsListFragment.REQUEST_KEY_PERMISSION_PROMPT,
+                this
+            ) { _, bundle ->
+                val result = bundle.getBoolean(AlarmsListFragment.BUNDLE_KEY_PERMISSION_PROMPT)
+                // a return value of true -> display the prompt to request the permission.
+                Log.w("here_Main", result.toString())
+
                 if (result)
                     requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }

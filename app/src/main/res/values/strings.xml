@@ -61,5 +61,8 @@
     <string name="enable_notification_permission">MyAlarm needs permission to send notifications when alarms go off. Please enable permission to set alarms</string>
     <string name="permission_required">Permission Required</string>
     <string name="allow">Allow</string>
+    <string name="permission_pref">permission preferences\n</string>
+    <string name="requested_permission">requested permission</string>
+    <string name="denied_twice">denied twice</string>
 
 </resources>

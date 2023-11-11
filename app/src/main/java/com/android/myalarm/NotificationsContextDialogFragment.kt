@@ -1,6 +1,5 @@
 package com.android.myalarm
 
-import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
@@ -22,10 +21,10 @@ class NotificationsContextDialogFragment : DialogFragment(), View.OnClickListene
         const val TAG = "NotificationsRequestDialog"
 
         /** The key used to send results back from fragment requests */
-        const val REQUEST_KEY_PERMISSIONS = "NotificationsContextDialogFragment.RESPONSE"
+        const val REQUEST_KEY_PERMISSION_REQUEST = "NotificationsContextDialogFragment.RESPONSE"
 
         /** The key used for the selected time in the result bundle */
-        const val BUNDLE_KEY_ = "RESPONSE"
+        const val BUNDLE_KEY_PERMISSION_REQUEST = "RESPONSE"
     }
 
     /** binding for the views of the fragment (nullable version) */
@@ -84,7 +83,7 @@ class NotificationsContextDialogFragment : DialogFragment(), View.OnClickListene
             // only care if the user wants to accept the permission, can't really do anything at this
             // moment if they select to not allow the permission.
             binding.allow.id -> {
-                setFragmentResult(REQUEST_KEY_PERMISSIONS, bundleOf(BUNDLE_KEY_ to true))
+                setFragmentResult(REQUEST_KEY_PERMISSION_REQUEST, bundleOf(BUNDLE_KEY_PERMISSION_REQUEST to true))
                 dialog?.dismiss()
             }
         }

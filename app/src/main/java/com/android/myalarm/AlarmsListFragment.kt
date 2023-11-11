@@ -4,16 +4,19 @@ import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -37,6 +40,14 @@ import kotlin.math.min
  */
 class AlarmsListFragment : Fragment() {
 
+    companion object {
+        /** The key used to send results back from fragment requests */
+        const val REQUEST_KEY_PERMISSION_PROMPT = "AlarmsListFragment.REQUEST_KEY"
+
+        /** The key used for the selected time in the result bundle */
+        const val BUNDLE_KEY_PERMISSION_PROMPT = "AlarmsListFragment.RESPONSE"
+    }
+
     /** binding for the views of the fragment (nullable version) */
     private var _binding: FragmentAlarmsListBinding? = null
 
@@ -51,6 +62,8 @@ class AlarmsListFragment : Fragment() {
 
     /** the list of alarms */
     private var alarms: List<Alarm> = emptyList()
+
+    private lateinit var preferences: SharedPreferences
 
     /** inflate the binding view for this fragment */
     override fun onCreateView(
@@ -75,6 +88,11 @@ class AlarmsListFragment : Fragment() {
         binding.alarmsList.adapter = adapter
         ItemTouchHelper(SwipeToDeleteCallback()).attachToRecyclerView(binding.alarmsList)
 
+        preferences = requireActivity().getSharedPreferences(
+            getString(R.string.permission_pref),
+            Context.MODE_PRIVATE
+        )
+
         // Use coroutine to collect alarms from the database
         lifecycleScope.launch {
             viewModel.alarms.collect {
@@ -83,15 +101,20 @@ class AlarmsListFragment : Fragment() {
             }
         }
 
-        val notificationManager = context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         // navigate to AlarmFragment when button is clicked
         binding.createAlarmButton.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 // check whether the POST_NOTIFICATIONS permission is enabled
                 if (notificationManager.areNotificationsEnabled())
-                    // Provide a random UUID, this is messy as this id doesn't get used but needed
-                    findNavController().navigate(AlarmsListFragmentDirections.createAlarm(UUID.randomUUID().toString()))
+                // Provide a random UUID, this is messy as this id doesn't get used but needed
+                    findNavController().navigate(
+                        AlarmsListFragmentDirections.createAlarm(
+                            UUID.randomUUID().toString()
+                        )
+                    )
                 else
                     // if POST_NOTIFICATIONS not enabled, prevent the user from creating an alarm
                     // and display a helpful IU to do so
@@ -114,19 +137,27 @@ class AlarmsListFragment : Fragment() {
      */
     private fun displayNotificationPermissionContext() {
         setFragmentResultListener(
-            NotificationsContextDialogFragment.REQUEST_KEY_PERMISSIONS,
+            NotificationsContextDialogFragment.REQUEST_KEY_PERMISSION_REQUEST,
         ) { _, bundle ->
-            val result = bundle.getBoolean(NotificationsContextDialogFragment.BUNDLE_KEY_)
+            val result = bundle.getBoolean(NotificationsContextDialogFragment.BUNDLE_KEY_PERMISSION_REQUEST)
 
-            if (result)
-                launchAppNotificationSettings()
+            if (result) {
+                Log.w("here2", preferences.getBoolean(getString(R.string.denied_twice), false).toString())
+                if (preferences.getBoolean(getString(R.string.denied_twice), false))
+                    launchAppNotificationSettings()
+                else {
+                    requireActivity().supportFragmentManager.setFragmentResult(REQUEST_KEY_PERMISSION_PROMPT, bundleOf(BUNDLE_KEY_PERMISSION_PROMPT to true))
+                }
+            }
         }
 
         findNavController().navigate(AlarmsListFragmentDirections.enableNotificationsAnnouncement())
     }
 
     /**
-     * Launches an intent to the applications notification settings on the Android device
+     * Launches an intent to the device settings where the applications notifications settings are
+     * located for the user to enable the permission.
+     * This is the last resort of the permission workflow of the app
      */
     private fun launchAppNotificationSettings() {
         val intent = Intent()
@@ -279,7 +310,10 @@ class AlarmsListFragment : Fragment() {
             val iconMargin = (itemView.height - icon.intrinsicHeight) / 2
             val iconMarginWidth = iconMargin + icon.intrinsicWidth
             val alpha =
-                max(min(255f * 2 * (kotlin.math.abs(dX) - iconMarginWidth) / itemView.width, 255f), 0f).toInt()
+                max(
+                    min(255f * 2 * (kotlin.math.abs(dX) - iconMarginWidth) / itemView.width, 255f),
+                    0f
+                ).toInt()
             background.color = 0xFF0000 or (alpha / 2 shl 24)
             background.setBounds(itemView.left, itemView.top, itemView.right, itemView.bottom)
             background.draw(c)
