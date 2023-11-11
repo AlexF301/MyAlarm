@@ -57,6 +57,7 @@ class MainActivity : AppCompatActivity() {
                 // app.
                 updateRequestedPermissionPreference(R.string.requested_permission)
             } else {
+                Log.w("here_Main", preferences.getBoolean(getString(R.string.requested_permission), false).toString())
                 // This else means the permission has been denied, so if we've requested at least once
                 // and the app is not requesting a rationale, then we confirm that user has denied
                 // twice
@@ -65,7 +66,8 @@ class MainActivity : AppCompatActivity() {
                 )
                     updateRequestedPermissionPreference(R.string.denied_twice)
 
-                updateRequestedPermissionPreference(R.string.requested_permission)
+                if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS))
+                    updateRequestedPermissionPreference(R.string.requested_permission)
             }
         }
 
