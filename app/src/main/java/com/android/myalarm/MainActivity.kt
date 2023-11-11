@@ -57,9 +57,9 @@ class MainActivity : AppCompatActivity() {
                 // app.
                 updateRequestedPermissionPreference(R.string.requested_permission)
             } else {
-                // This else means the permission has been denied, so if the if below returns true,
-                // then that means this would be the second time that the permission prompt request
-                // has been called and denied
+                // This else means the permission has been denied, so if we've requested at least once
+                // and the app is not requesting a rationale, then we confirm that user has denied
+                // twice
                 if (!shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
                     && preferences.getBoolean(getString(R.string.requested_permission), false)
                 )
