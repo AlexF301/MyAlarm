@@ -110,6 +110,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Updates a boolean preference to true
+     */
     private fun updateRequestedPermissionPreference(stringID: Int) {
         val editor = preferences.edit()
         editor.putBoolean(getString(stringID), true)
