@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/announcement_background"
+    android:padding="10dp"
+    tools:context=".NotificationsContextDialogFragment">
+
+    <TextView
+        android:id="@+id/title_permission_request"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/permission_required"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="10dp" />
+
+    <TextView
+        android:id="@+id/permission_request_desc_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/enable_notification_permission"
+        android:paddingTop="10dp"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@+id/title_permission_request" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/permission_request_desc_box"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/cancel"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:textColor="@color/black"
+            android:layout_marginEnd="10dp"
+            android:drawableTop="@drawable/delete"
+            style="?android:attr/buttonBarButtonStyle" />
+
+        <Button
+            android:id="@+id/allow"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/allow"
+            android:textColor="@color/black"
+            android:drawableTop="@drawable/baseline_check_circle_24"
+            style="?android:attr/buttonBarButtonStyle" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

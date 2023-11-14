@@ -1,16 +1,27 @@
 package com.android.myalarm
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.findNavController
 import com.android.myalarm.databinding.ActivityMainBinding
 
-
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+
+    /** Shared Preference object. Being used to save attempts at asking for permissions */
+    private lateinit var preferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,44 +29,136 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //verifySystemPermissionForSettingExactAlarms()
-        //getPermissions()
+        preferences =
+            getSharedPreferences(getString(R.string.permission_pref), Context.MODE_PRIVATE)
+
         navigationBarSetup()
+
+        setFragmentResultListenerForPermissionResponse(
+            AlarmsListFragment.REQUEST_KEY_PERMISSION_PROMPT,
+            AlarmsListFragment.BUNDLE_KEY_PERMISSION_PROMPT
+        )
+
+        // The post notifications permission is only available for sdk's 33+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            requestNotificationPermission()
+    }
+
+    /**
+     * Register the permissions callback, which handles the user's response to the
+     * system permissions dialog. Save the return value, an instance of
+     * ActivityResultLauncher.
+     *
+     * Calling updateRequestedPermissionPreference() in both to signify that the initial prompt
+     * has been used
+     */
+    val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                // Permission is granted. Continue the action or workflow in your
+                // app.
+                updateRequestedPermissionPreference(R.string.requested_permission)
+            } else {
+                Log.w(
+                    "here_Main",
+                    preferences.getBoolean(getString(R.string.requested_permission), false)
+                        .toString()
+                )
+                // This else means the permission has been denied, so if we've requested at least once
+                // and the app is not requesting a rationale, then we confirm that user has denied
+                // twice
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
+                    && preferences.getBoolean(getString(R.string.requested_permission), false)
+                )
+                    updateRequestedPermissionPreference(R.string.denied_twice)
+
+                if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS))
+                    updateRequestedPermissionPreference(R.string.requested_permission)
+            }
+        }
+
+    /** Request the POST_NOTIFICATIONS permission that is required for android sdk 33+ */
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun requestNotificationPermission() {
+        requestPermission(Manifest.permission.POST_NOTIFICATIONS)
     }
 
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        when (requestCode) {
-            0 -> {
-                // If request is cancelled, the result arrays are empty.
-                if ((grantResults.isNotEmpty() &&
-                            grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                ) {
-                    // Permission is granted. Continue the action or workflow
-                    // in your app.
-                } else {
-                    // Explain to the user that the feature is unavailable because
-                    // the feature requires a permission that the user has denied.
-                    // At the same time, respect the user's decision. Don't link to
-                    // system settings in an effort to convince the user to change
-                    // their decision.
-                }
-                return
+    /** Generic method that takes the permission to request as a parameter */
+    private fun requestPermission(permission: String) {
+        when {
+            ContextCompat.checkSelfPermission(
+                this,
+                permission
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                // You can use the API that requires the permission.
             }
 
-            // Add other 'when' lines to check for other
-            // permissions this app might request.
+            shouldShowRequestPermissionRationale(permission) -> {
+                Log.w("here", "here")
+                // In an educational UI, explain to the user why your app requires this
+                // permission for a specific feature to behave as expected, and what
+                // features are disabled if it's declined.
+
+                // Android 11 and up, once a permissions is initially denied, future attempts are
+                // prevented and the app can only try once more to display the permission prompt.
+                // This is the second attempt workflow
+                val dialogFragment = NotificationsContextDialogFragment()
+                dialogFragment.show(supportFragmentManager, NotificationsContextDialogFragment.TAG)
+
+                // Second attempt to request the notification when app launches
+                setFragmentResultListenerForPermissionResponse(
+                    NotificationsContextDialogFragment.REQUEST_KEY_PERMISSION_REQUEST,
+                    NotificationsContextDialogFragment.BUNDLE_KEY_PERMISSION_REQUEST
+                )
+            }
+
             else -> {
-                // Ignore all other requests.
+                Log.w("here", "here2")
+                // Directly ask for the permission.
+                // The registered ActivityResultCallback gets the result of this request.
+                requestPermissionLauncher.launch(permission)
             }
         }
     }
+
+    /**
+     * Updates a boolean preference to true
+     */
+    private fun updateRequestedPermissionPreference(stringID: Int) {
+        val editor = preferences.edit()
+        editor.putBoolean(getString(stringID), true)
+        editor.apply()
+    }
+
+    /**
+     * Sets up a FragmentResultListener on the provided request key (since asking
+     * can occur from two different spots) to get the response whether the user wants to allow
+     * the POST_NOTIFICATIONS permission
+     *
+     * https://developer.android.com/static/images/training/permissions/workflow-runtime.svg)
+     *
+     * Only set up to listen when a user selects "allow" on the dialog which returns true. a return
+     * value of true -> display the prompt to request the permission.
+     *
+     * If the user selected "cancel" on the dialog then we shouldn't do anything more at this time
+     */
+    @SuppressLint("InlinedApi")
+    private fun setFragmentResultListenerForPermissionResponse(
+        requestKey: String,
+        bundleKey: String,
+    ) {
+        supportFragmentManager.setFragmentResultListener(requestKey, this) { _, bundle ->
+            val result = bundle.getBoolean(bundleKey)
+            // A return value of true -> display the prompt to request the permission.
+            if (result) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
 
     /**
      * Responds to item navigation bar item clicks by navigating to the fragment that corresponds
@@ -70,85 +173,22 @@ class MainActivity : AppCompatActivity() {
                         .navigate(R.id.nav_alarmsListFragment)
                     true
                 }
+
                 R.id.timer_fragment_tab -> {
                     binding.navHostFragment.findNavController().navigateUp()
                     binding.navHostFragment.findNavController().navigate(R.id.nav_timerFragment)
                     true
                 }
+
                 R.id.stopwatch_fragment_tab -> {
                     binding.navHostFragment.findNavController().navigateUp()
-                    binding.navHostFragment.findNavController().navigate(R.id.nav_stopWatchFragment)
+                    binding.navHostFragment.findNavController()
+                        .navigate(R.id.nav_stopWatchFragment)
                     true
                 }
+
                 else -> false
             }
         }
     }
-
-//    /**
-//     * To schedule exact alarms, user must provide system permissions to allow for setting Alarms
-//     * and Reminders. Redirects user to these settings if permission is not provided.
-//     */
-//    private fun verifySystemPermissionForSettingExactAlarms() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-//            val alarmManager =
-//                ContextCompat.getSystemService(applicationContext, AlarmManager::class.java)
-//            if (alarmManager?.canScheduleExactAlarms() == false) {
-//                Intent().also { intent ->
-//                    intent.action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
-//                    startActivity(intent)
-//                }
-//            }
-//        }
-//    }
-
-//    private fun verifyPermissions() {
-//        // Register the permissions callback, which handles the user's response to the
-//        // system permissions dialog. Save the return value, an instance of
-//        // ActivityResultLauncher. You can use either a val, as shown in this snippet,
-//        // or a lateinit var in your onAttach() or onCreate() method.
-//        val requestPermissionLauncher =
-//            registerForActivityResult(
-//                ActivityResultContracts.RequestPermission()
-//            ) { isGranted: Boolean ->
-//                if (isGranted) {
-//                    // Permission is granted. Continue the action or workflow in your
-//                    // app.
-//                } else {
-//                    // Explain to the user that the feature is unavailable because the
-//                    // feature requires a permission that the user has denied. At the
-//                    // same time, respect the user's decision. Don't link to system
-//                    // settings in an effort to convince the user to change their
-//                    // decision.
-//
-//                }
-//            }
-//    }
-
-//    @RequiresApi(Build.VERSION_CODES.S)
-//    private fun getScheduleExactAlarmPermissions() {
-//        when {
-//            ContextCompat.checkSelfPermission(
-//                applicationContext,
-//                android.Manifest.permission.SCHEDULE_EXACT_ALARM
-//            ) == PackageManager.PERMISSION_GRANTED -> {
-//                // You can use the API that requires the permission.
-//            }
-//            shouldShowRequestPermissionRationale(android.Manifest.permission.SCHEDULE_EXACT_ALARM) -> {
-//                // In an educational UI, explain to the user why your app requires this
-//                // permission for a specific feature to behave as expected, and what
-//                // features are disabled if it's declined. In this UI, include a
-//                // "cancel" or "no thanks" button that lets the user continue
-//                // using your app without granting the permission.
-//                //showInContextUI(...)
-//            }
-//            else -> {
-//                // You can directly ask for the permission.
-//                requestPermissions(
-//                    arrayOf(android.Manifest.permission.SCHEDULE_EXACT_ALARM),
-//                    0
-//                )
-//            }
-//        }
-//    }
 }

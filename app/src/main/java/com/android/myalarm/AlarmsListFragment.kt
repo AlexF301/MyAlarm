@@ -1,15 +1,23 @@
 package com.android.myalarm
 
 import android.annotation.SuppressLint
+import android.app.NotificationManager
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -20,18 +28,24 @@ import com.android.myalarm.database.DayOfTheWeek
 import com.android.myalarm.databinding.AlarmItemBinding
 import com.android.myalarm.databinding.FragmentAlarmsListBinding
 import kotlinx.coroutines.launch
-import java.lang.Math.abs
 import java.util.*
-import java.util.Collections.max
-import java.util.Collections.min
 import kotlin.math.max
 import kotlin.math.min
+
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation. Responsible for
  * displaying the list of alarms.
  */
 class AlarmsListFragment : Fragment() {
+
+    companion object {
+        /** The key used to send results back from fragment requests */
+        const val REQUEST_KEY_PERMISSION_PROMPT = "AlarmsListFragment.REQUEST_KEY"
+
+        /** The key used for the selected time in the result bundle */
+        const val BUNDLE_KEY_PERMISSION_PROMPT = "AlarmsListFragment.RESPONSE"
+    }
 
     /** binding for the views of the fragment (nullable version) */
     private var _binding: FragmentAlarmsListBinding? = null
@@ -47,6 +61,9 @@ class AlarmsListFragment : Fragment() {
 
     /** the list of alarms */
     private var alarms: List<Alarm> = emptyList()
+
+    /** Shared Preference object. Being used to save attempts at asking for permissions */
+    private lateinit var preferences: SharedPreferences
 
     /** inflate the binding view for this fragment */
     override fun onCreateView(
@@ -71,6 +88,11 @@ class AlarmsListFragment : Fragment() {
         binding.alarmsList.adapter = adapter
         ItemTouchHelper(SwipeToDeleteCallback()).attachToRecyclerView(binding.alarmsList)
 
+        preferences = requireActivity().getSharedPreferences(
+            getString(R.string.permission_pref),
+            Context.MODE_PRIVATE
+        )
+
         // Use coroutine to collect alarms from the database
         lifecycleScope.launch {
             viewModel.alarms.collect {
@@ -79,10 +101,25 @@ class AlarmsListFragment : Fragment() {
             }
         }
 
+        val notificationManager =
+            context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
         // navigate to AlarmFragment when button is clicked
         binding.createAlarmButton.setOnClickListener {
-            // Provide a random UUID, this is messy as this id doesn't get used but needed
-            findNavController().navigate(AlarmsListFragmentDirections.createAlarm(UUID.randomUUID().toString()))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                // check whether the POST_NOTIFICATIONS permission is enabled
+                if (notificationManager.areNotificationsEnabled())
+                // Provide a random UUID, this is messy as this id doesn't get used but needed
+                    findNavController().navigate(
+                        AlarmsListFragmentDirections.createAlarm(
+                            UUID.randomUUID().toString()
+                        )
+                    )
+                else
+                    // if POST_NOTIFICATIONS not enabled, prevent the user from creating an alarm
+                    // and display a helpful IU to do so
+                    displayNotificationPermissionContext()
+            }
         }
     }
 
@@ -93,6 +130,58 @@ class AlarmsListFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+
+    /**
+     * Displays to the user the reasoning for why the POST_NOTIFICATIONS permission need to be enabled
+     * and listens for a response. The permission workflow suggest asking direct permission from
+     * the user with the permission prompt dialog provided by the system
+     *
+     * Using SharedPreferences, we check if the user has already denied that prompt twice to either
+     * show them the prompt again if they haven't denied it twice, Or if they have, send the user
+     * to the app notification settings on the users device to request the permission to continue
+     * using the feature to set alarms (which require notification so a user can actually receive them)
+     */
+    private fun displayNotificationPermissionContext() {
+        setFragmentResultListener(
+            NotificationsContextDialogFragment.REQUEST_KEY_PERMISSION_REQUEST,
+        ) { _, bundle ->
+            val result = bundle.getBoolean(NotificationsContextDialogFragment.BUNDLE_KEY_PERMISSION_REQUEST)
+
+            if (result) {
+                if (preferences.getBoolean(getString(R.string.denied_twice), false))
+                    launchAppNotificationSettings()
+                else {
+                    requireActivity().supportFragmentManager.setFragmentResult(REQUEST_KEY_PERMISSION_PROMPT, bundleOf(BUNDLE_KEY_PERMISSION_PROMPT to true))
+                }
+            }
+        }
+
+        findNavController().navigate(AlarmsListFragmentDirections.enableNotificationsAnnouncement())
+    }
+
+    /**
+     * Launches an intent to the device settings where the applications notifications settings are
+     * located for the user to enable the permission.
+     * This is the last resort of the permission workflow of the app
+     */
+    private fun launchAppNotificationSettings() {
+        val intent = Intent()
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        // SDk 26 +
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, context?.packageName)
+        } else { // SDK 24 - 25 (since current min supported sdk is 24)
+            intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
+            intent.putExtra("app_package", context?.packageName)
+            intent.putExtra("app_uid", context?.applicationInfo?.uid)
+        }
+
+        startActivity(intent)
+    }
+
 
     /**
      * Formats the days of the week to be user friendly
@@ -227,7 +316,10 @@ class AlarmsListFragment : Fragment() {
             val iconMargin = (itemView.height - icon.intrinsicHeight) / 2
             val iconMarginWidth = iconMargin + icon.intrinsicWidth
             val alpha =
-                max(min(255f * 2 * (kotlin.math.abs(dX) - iconMarginWidth) / itemView.width, 255f), 0f).toInt()
+                max(
+                    min(255f * 2 * (kotlin.math.abs(dX) - iconMarginWidth) / itemView.width, 255f),
+                    0f
+                ).toInt()
             background.color = 0xFF0000 or (alpha / 2 shl 24)
             background.setBounds(itemView.left, itemView.top, itemView.right, itemView.bottom)
             background.draw(c)

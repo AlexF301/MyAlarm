@@ -58,5 +58,11 @@
     <string name="display_time">%1$d:%2$02d:%3$03d</string>
 
     <string name="default_time">00:00:000</string>
+    <string name="enable_notification_permission">MyAlarm needs permission to send notifications when alarms go off. Please enable permission to set alarms</string>
+    <string name="permission_required">Permission Required</string>
+    <string name="allow">Allow</string>
+    <string name="permission_pref">permission preferences\n</string>
+    <string name="requested_permission">requested permission</string>
+    <string name="denied_twice">denied twice</string>
 
 </resources>

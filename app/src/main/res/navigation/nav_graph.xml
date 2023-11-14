@@ -13,6 +13,9 @@
         <action
             android:id="@+id/create_alarm"
             app:destination="@id/nav_alarmFragment" />
+        <action
+            android:id="@+id/enable_notifications_announcement"
+            app:destination="@id/notificationsContextDialog" />
     </fragment>
     <fragment
         android:id="@+id/nav_alarmFragment"
@@ -50,4 +53,9 @@
         android:name="com.android.myalarm.SelectRingtoneDialogFragment"
         android:label="SelectRingtoneDialogFragment"
         tools:layout="@layout/ringtone_box"/>
+    <dialog
+        android:id="@+id/notificationsContextDialog"
+        android:name="com.android.myalarm.NotificationsContextDialogFragment"
+        android:label="fragment_notifications_context_dialog"
+        tools:layout="@layout/fragment_notifications_context_dialog" />
 </navigation>

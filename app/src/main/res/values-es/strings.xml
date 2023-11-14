@@ -55,5 +55,6 @@
     <string name="display_time">%1$d:%2$02d:%3$03d</string>
 
     <string name="default_time">00:00:000</string>
+    <string name="permission_required">Permission Required</string>
 
 </resources>
