@@ -11,7 +11,6 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -63,6 +62,7 @@ class AlarmsListFragment : Fragment() {
     /** the list of alarms */
     private var alarms: List<Alarm> = emptyList()
 
+    /** Shared Preference object. Being used to save attempts at asking for permissions */
     private lateinit var preferences: SharedPreferences
 
     /** inflate the binding view for this fragment */
@@ -134,6 +134,13 @@ class AlarmsListFragment : Fragment() {
 
     /**
      * Displays to the user the reasoning for why the POST_NOTIFICATIONS permission need to be enabled
+     * and listens for a response. The permission workflow suggest asking direct permission from
+     * the user with the permission prompt dialog provided by the system
+     *
+     * Using SharedPreferences, we check if the user has already denied that prompt twice to either
+     * show them the prompt again if they haven't denied it twice, Or if they have, send the user
+     * to the app notification settings on the users device to request the permission to continue
+     * using the feature to set alarms (which require notification so a user can actually receive them)
      */
     private fun displayNotificationPermissionContext() {
         setFragmentResultListener(
@@ -142,7 +149,6 @@ class AlarmsListFragment : Fragment() {
             val result = bundle.getBoolean(NotificationsContextDialogFragment.BUNDLE_KEY_PERMISSION_REQUEST)
 
             if (result) {
-                Log.w("here2", preferences.getBoolean(getString(R.string.denied_twice), false).toString())
                 if (preferences.getBoolean(getString(R.string.denied_twice), false))
                     launchAppNotificationSettings()
                 else {

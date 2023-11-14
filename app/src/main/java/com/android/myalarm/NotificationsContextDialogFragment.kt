@@ -74,7 +74,17 @@ class NotificationsContextDialogFragment : DialogFragment(), View.OnClickListene
         dialog?.window?.setLayout(percentWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
-
+    /**
+     * 2 options a user can select on the dialog (excluding clicking off the dialog which suggest
+     * ignoring the request).
+     *
+     * Cancel option means we can't do anything further. User has not accepted to enable notifications
+     * permission (a reasoning has been provided by the app)
+     *
+     * Allow option means that the user has accepted that they need to enable notifications permission
+     * to use the alarms feature for the app. In which case we return to the fragment result listener
+     * a boolean true
+     */
     override fun onClick(view: View?) {
         when (view?.id) {
             // dismiss the dialog
