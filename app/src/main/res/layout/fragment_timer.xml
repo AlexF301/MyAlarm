@@ -48,19 +48,17 @@
         android:textSize="33sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/minutePicker"
         app:layout_constraintVertical_bias="0.261" />
 
     <Button
         android:id="@+id/startCountdown"
-        android:layout_width="109dp"
-        android:layout_height="54dp"
+        android:layout_width="105dp"
+        android:layout_height="55dp"
         android:text="@string/start"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.215"
+        app:layout_constraintEnd_toStartOf="@+id/countdownView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.831"
@@ -68,14 +66,13 @@
 
     <Button
         android:id="@+id/stopCountdown"
-        android:layout_width="102dp"
-        android:layout_height="52dp"
+        android:layout_width="105dp"
+        android:layout_height="55dp"
         android:enabled="false"
         android:text="@string/stop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.724"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/countdownView"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.829"
         tools:ignore="SpeakableTextPresentCheck" />
@@ -134,7 +131,6 @@
         android:enabled="false"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="@+id/stopCountdown"
-        app:layout_constraintHorizontal_bias="0.479"
         app:layout_constraintStart_toStartOf="@+id/startCountdown"
         app:layout_constraintTop_toBottomOf="@+id/countdownView"
         app:layout_constraintVertical_bias="0.842" />
