@@ -64,5 +64,6 @@
     <string name="permission_pref">permission preferences\n</string>
     <string name="requested_permission">requested permission</string>
     <string name="denied_twice">denied twice</string>
+    <string name="image">Image</string>
 
 </resources>
