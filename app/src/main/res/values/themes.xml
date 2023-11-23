@@ -34,6 +34,7 @@
         <!-- Customize your theme here. -->
 
         <item name="android:windowBackground">@color/light_beige</item>
+        <item name="materialCardViewStyle">@style/Widget.MaterialComponents.CardView</item>
     </style>
 
 
