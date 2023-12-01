@@ -62,7 +62,7 @@
         android:layout_height="40dp"
         android:layout_marginLeft="3dp"
         android:layout_marginRight="3dp"
-        android:background="@drawable/selected_background"
+        android:background="@drawable/button_selector_background"
         android:textOff="@string/thursday_toggle"
         android:textOn="@string/thursday_toggle" />
 
@@ -73,7 +73,7 @@
         android:layout_height="40dp"
         android:layout_marginLeft="3dp"
         android:layout_marginRight="3dp"
-        android:background="@drawable/selected_background"
+        android:background="@drawable/button_selector_background"
         android:textOff="@string/friday_toggle"
         android:textOn="@string/friday_toggle" />
 
@@ -84,7 +84,7 @@
         android:layout_height="40dp"
         android:layout_marginLeft="3dp"
         android:layout_marginRight="3dp"
-        android:background="@drawable/selected_background"
+        android:background="@drawable/button_selector_background"
         android:textOff="@string/saturday_toggle"
         android:textOn="@string/saturday_toggle" />
 </LinearLayout>

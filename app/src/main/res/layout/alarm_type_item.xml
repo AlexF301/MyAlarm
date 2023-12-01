@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -13,31 +14,33 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        card_view:cardCornerRadius="10dp"
+        card_view:cardCornerRadius="20dp"
         card_view:cardElevation="5sp"
         android:clickable="true"
         android:focusable="true"
+        app:cardBackgroundColor="?attr/colorSecondaryContainer"
         android:foreground="?android:selectableItemBackground" >
 
         <TextView
             android:id="@+id/alarm_type_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
             android:textSize="25sp"
-            android:paddingStart="10sp"
-            android:paddingEnd="10sp"
-            app:autoSizeMaxTextSize="25sp"/>
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="10dp"
+            app:autoSizeMaxTextSize="25sp"
+            tools:text="Regular"/>
 
         <TextView
             android:id="@+id/alarm_type_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textColor="@color/black"
-            android:layout_marginTop="10sp"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
             android:textSize="15sp"
-            app:autoSizeMaxTextSize="15sp" />
+            app:autoSizeMaxTextSize="15sp"
+            tools:text="Regular Alarm"/>
     </androidx.cardview.widget.CardView>
 
 </LinearLayout>

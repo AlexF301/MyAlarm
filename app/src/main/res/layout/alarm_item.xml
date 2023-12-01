@@ -12,6 +12,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="85sp"
+        app:cardBackgroundColor="?attr/colorSurfaceVariant"
         android:layout_marginStart="10sp"
         android:layout_marginEnd="10sp"
         card_view:cardCornerRadius="20dp">
@@ -40,16 +41,16 @@
                 android:layout_marginEnd="15dp"
                 android:layout_weight="0"
                 android:textAlignment="textEnd"
-                android:textColor="?attr/colorPrimary"
+                android:textColor="?attr/colorTertiaryContainer"
                 android:textSize="15sp"
                 tools:text="Regular"/>
 
             <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/alarm_status_button"
-                tools:checked="true"
+                tools:checked="false"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
+                android:layout_height="wrap_content"
+                app:thumbTint="@color/white" />
         </LinearLayout>
 
         <TextView
@@ -60,8 +61,8 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
-            android:fontFamily="sans-serif"
-            android:textColor="?attr/colorPrimary"
+            android:fontFamily="sans-serif-light"
+            android:textColor="?attr/colorTertiaryContainer"
             android:textSize="13sp"
             android:textStyle="italic"
             tools:text="Monday, Tuesday" />

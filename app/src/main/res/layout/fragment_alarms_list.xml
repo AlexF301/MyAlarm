@@ -59,6 +59,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:contentDescription="@string/fab_content_desc"
+        app:tint="?attr/colorOnSurfaceVariant"
         app:srcCompat="@drawable/ic_baseline_add_alarm_24" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
