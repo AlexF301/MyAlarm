@@ -6,9 +6,9 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import android.util.Log
-import androidx.activity.result.contract.ActivityResultContracts
 import com.android.myalarm.R
+import com.google.android.material.color.DynamicColors
+
 
 /**
  * Base Android application class. Responsible for creating Repository to have access to Room
@@ -22,7 +22,10 @@ class MyAlarmApplication : Application() {
         MyAlarmRepository.initialize(this)
 
         createNotificationChannel()
+
+        DynamicColors.applyToActivitiesIfAvailable(this)
     }
+
 
     /**
      * Before you can deliver the notification on Android 8.0 and higher, you must register your
