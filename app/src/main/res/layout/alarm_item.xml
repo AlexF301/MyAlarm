@@ -41,7 +41,7 @@
                 android:layout_marginEnd="15dp"
                 android:layout_weight="0"
                 android:textAlignment="textEnd"
-                android:textColor="?attr/colorTertiaryContainer"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="15sp"
                 tools:text="Regular"/>
 
@@ -62,7 +62,7 @@
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
             android:fontFamily="sans-serif-light"
-            android:textColor="?attr/colorTertiaryContainer"
+            android:textColor="?attr/colorPrimary"
             android:textSize="13sp"
             android:textStyle="italic"
             tools:text="Monday, Tuesday" />

@@ -4,5 +4,5 @@
         android:color="?attr/colorOnSurfaceVariant"/>
 
     <item android:state_checked="true"
-        android:color="?attr/colorOnPrimaryContainer" />
+        android:color="?attr/colorPrimary" />
 </selector>

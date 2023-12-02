@@ -11,7 +11,7 @@
         <item name="colorOnSecondaryContainer">@color/md_theme_light_secondaryFixedDim</item>
         <item name="colorTertiary">@color/md_theme_light_tertiary</item>
         <item name="colorOnTertiary">@color/md_theme_light_onTertiary</item>
-        <item name="colorTertiaryContainer">@color/md_theme_light_primary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer</item>
         <item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer</item>
         <item name="colorError">@color/md_theme_light_error</item>
         <item name="colorOnError">@color/md_theme_light_onError</item>
@@ -61,6 +61,6 @@
     </style>
 
     <style name="App.Custom.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">@color/md_theme_dark_onPrimary</item>
+        <item name="android:color">?attr/colorPrimaryInverse</item>
     </style>
 </resources>

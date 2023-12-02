@@ -14,6 +14,8 @@
         android:layout_gravity="bottom"
         android:layout_weight="0"
         app:itemActiveIndicatorStyle="@style/App.Custom.Indicator"
+        app:itemTextColor="?attr/colorSurfaceInverse"
+        app:itemIconTint="?attr/colorSurfaceInverse"
         app:menu="@menu/bottom_app_bar" />
 
     <androidx.fragment.app.FragmentContainerView

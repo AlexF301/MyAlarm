@@ -98,7 +98,6 @@ class MainActivity : AppCompatActivity() {
             }
 
             shouldShowRequestPermissionRationale(permission) -> {
-                Log.w("here", "here")
                 // In an educational UI, explain to the user why your app requires this
                 // permission for a specific feature to behave as expected, and what
                 // features are disabled if it's declined.
@@ -117,7 +116,6 @@ class MainActivity : AppCompatActivity() {
             }
 
             else -> {
-                Log.w("here", "here2")
                 // Directly ask for the permission.
                 // The registered ActivityResultCallback gets the result of this request.
                 requestPermissionLauncher.launch(permission)
