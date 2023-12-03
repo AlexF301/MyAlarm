@@ -35,6 +35,6 @@
     </style>
 
     <style name="App.Custom.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">@color/md_theme_dark_secondary</item>
+        <item name="android:color">?attr/colorSecondaryContainer</item>
     </style>
 </resources>
