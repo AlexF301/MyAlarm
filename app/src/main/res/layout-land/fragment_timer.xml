@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/timer_fragment"
@@ -7,39 +8,53 @@
     android:layout_height="match_parent"
     tools:context=".TimerFragment" >
 
+    <!-- Guideline to split the layout -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/timer_fragment_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+
     <NumberPicker
         android:id="@+id/minutePicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="332dp"
+        android:scaleY="1.2"
+        android:scaleX="1.2"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/secondPicker"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/hourPicker"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.502" />
+/>
 
     <NumberPicker
         android:id="@+id/secondPicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:scaleX="1.2"
+        android:scaleY="1.2"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/timer_fragment_guideline"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/minutePicker"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.502" />
+ />
 
     <NumberPicker
         android:id="@+id/hourPicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:scaleX="1.2"
+        android:scaleY="1.2"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.106"
+        app:layout_constraintEnd_toEndOf="@id/minutePicker"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.502" />
+ />
 
     <TextView
         android:id="@+id/countdownView"
@@ -48,8 +63,7 @@
         android:textSize="33sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.708"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@id/timer_fragment_guideline"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.261" />
 
@@ -59,11 +73,9 @@
         android:layout_height="54dp"
         android:text="@string/start"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.545"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/countdownView"
+        app:layout_constraintStart_toStartOf="@id/timer_fragment_guideline"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.677"
         tools:ignore="SpeakableTextPresentCheck" />
 
     <Button
@@ -74,10 +86,8 @@
         android:text="@string/stop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.848"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/countdownView"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.674"
         tools:ignore="SpeakableTextPresentCheck" />
 
     <TextView
@@ -87,10 +97,10 @@
         android:text="@string/hours"
         android:textSize="14sp"
         app:autoSizeTextType="uniform"
+        android:gravity="center"
         app:layout_constraintBottom_toTopOf="@+id/hourPicker"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.102"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/hourPicker"
+        app:layout_constraintStart_toStartOf="@id/hourPicker"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
         tools:text="Hours" />
@@ -102,10 +112,10 @@
         android:text="@string/minutes"
         android:textSize="14sp"
         app:autoSizeTextType="uniform"
+        android:gravity="center"
         app:layout_constraintBottom_toTopOf="@+id/minutePicker"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.198"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/minutePicker"
+        app:layout_constraintStart_toStartOf="@id/minutePicker"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
         tools:text="Minutes" />
@@ -116,11 +126,11 @@
         android:layout_height="wrap_content"
         android:text="@string/seconds"
         android:textSize="14sp"
+        android:gravity="center"
         app:autoSizeTextType="uniform"
         app:layout_constraintBottom_toTopOf="@+id/secondPicker"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.293"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/secondPicker"
+        app:layout_constraintStart_toStartOf="@id/secondPicker"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.989"
         tools:text="Seconds" />

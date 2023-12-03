@@ -39,6 +39,7 @@
                 android:id="@+id/volume"
                 android:layout_width="268dp"
                 android:layout_height="42dp"
+                android:thumbTint="?attr/colorTertiary"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="75sp" />
 
@@ -118,7 +119,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="350dp"
-                android:text="@string/create_alarm" />
+                android:text="@string/create_alarm"
+                />
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
