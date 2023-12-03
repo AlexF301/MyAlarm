@@ -97,6 +97,13 @@ class MainActivity : AppCompatActivity() {
                 // You can use the API that requires the permission.
             }
 
+            // TODO: Dialog being recreated after lifecycle change (light/dark mode change, orientation change)
+            // happening because the activity gets destroyed and recreated and thus leads to the below
+            // code to check whether permissions are enabled. Checking is fine but shouldn't happen
+            // after a lifecycle change. For example a user can deny it once, switch to landscape and the
+            // prompt will reappear and the user has to respond again after already responding. Also producing a
+            // bug causing multiple instances of the dialog to be created, so i have to cancel/allow x amount of times
+
             shouldShowRequestPermissionRationale(permission) -> {
                 // In an educational UI, explain to the user why your app requires this
                 // permission for a specific feature to behave as expected, and what
