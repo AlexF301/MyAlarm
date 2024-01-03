@@ -1,4 +1,4 @@
-package com.android.myalarm
+package com.android.myalarm.MainActivity
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -7,13 +7,16 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.findNavController
+import com.android.myalarm.AlarmsListFragment
+import com.android.myalarm.NotificationsContextDialogFragment
+import com.android.myalarm.R
 import com.android.myalarm.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -22,6 +25,8 @@ class MainActivity : AppCompatActivity() {
 
     /** Shared Preference object. Being used to save attempts at asking for permissions */
     private lateinit var preferences: SharedPreferences
+
+    private val viewModel : MainActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,11 +67,6 @@ class MainActivity : AppCompatActivity() {
                 // app.
                 updateRequestedPermissionPreference(R.string.requested_permission)
             } else {
-                Log.w(
-                    "here_Main",
-                    preferences.getBoolean(getString(R.string.requested_permission), false)
-                        .toString()
-                )
                 // This else means the permission has been denied, so if we've requested at least once
                 // and the app is not requesting a rationale, then we confirm that user has denied
                 // twice
@@ -83,7 +83,12 @@ class MainActivity : AppCompatActivity() {
     /** Request the POST_NOTIFICATIONS permission that is required for android sdk 33+ */
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun requestNotificationPermission() {
-        requestPermission(Manifest.permission.POST_NOTIFICATIONS)
+        if (!viewModel.isDialogShown) {
+            // permission dialog will only appear once during apps current lifecycle
+            requestPermission(Manifest.permission.POST_NOTIFICATIONS)
+            // dialog was shown to at least once in the current lifecycle
+            viewModel.isDialogShown = true
+        }
     }
 
 
@@ -96,7 +101,6 @@ class MainActivity : AppCompatActivity() {
             ) == PackageManager.PERMISSION_GRANTED -> {
                 // You can use the API that requires the permission.
             }
-
             shouldShowRequestPermissionRationale(permission) -> {
                 // In an educational UI, explain to the user why your app requires this
                 // permission for a specific feature to behave as expected, and what
@@ -104,7 +108,7 @@ class MainActivity : AppCompatActivity() {
 
                 // Android 11 and up, once a permissions is initially denied, future attempts are
                 // prevented and the app can only try once more to display the permission prompt.
-                // This is the second attempt workflow
+                // This is the second attempt
                 val dialogFragment = NotificationsContextDialogFragment()
                 dialogFragment.show(supportFragmentManager, NotificationsContextDialogFragment.TAG)
 

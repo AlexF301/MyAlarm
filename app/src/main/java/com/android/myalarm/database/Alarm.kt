@@ -1,7 +1,6 @@
 package com.android.myalarm.database
 
 import android.media.RingtoneManager
-import android.net.Uri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.UUID
