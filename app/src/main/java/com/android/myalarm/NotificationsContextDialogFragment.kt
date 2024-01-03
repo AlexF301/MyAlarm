@@ -86,16 +86,8 @@ class NotificationsContextDialogFragment : DialogFragment(), View.OnClickListene
      * a boolean true
      */
     override fun onClick(view: View?) {
-        when (view?.id) {
-            // dismiss the dialog
-            binding.cancel.id -> dialog?.dismiss()
-            // return to MainActivity that the use wants to allow the notification permission
-            // only care if the user wants to accept the permission, can't really do anything at this
-            // moment if they select to not allow the permission.
-            binding.allow.id -> {
-                setFragmentResult(REQUEST_KEY_PERMISSION_REQUEST, bundleOf(BUNDLE_KEY_PERMISSION_REQUEST to true))
-                dialog?.dismiss()
-            }
-        }
+        val result = view?.id == binding.allow.id
+        setFragmentResult(REQUEST_KEY_PERMISSION_REQUEST, bundleOf(BUNDLE_KEY_PERMISSION_REQUEST to result))
+        dialog?.dismiss()
     }
 }

@@ -22,7 +22,7 @@
         android:theme="@style/Theme.MyAlarm.SplashScreen"
         tools:targetApi="33">
         <activity
-            android:name=".MainActivity"
+            android:name=".MainActivity.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.MyAlarm">
             <intent-filter>
